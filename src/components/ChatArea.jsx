@@ -1,0 +1,138 @@
+import React, { useState } from "react";
+import {
+  FaSearch,
+  FaEllipsisV,
+  FaPaperclip,
+  FaMicrophone,
+  FaSmile,
+  FaPaperPlane,
+  FaPhone,
+  FaVideo,
+  FaArrowLeft,
+} from "react-icons/fa";
+import { ViewMessage } from "./MessageItem";
+
+const ChatArea = ({ selectedChat, setSelectedChat, messages }) => {
+  const [newMessage, setNewMessage] = useState("");
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (newMessage.trim()) {
+      // In a real app, you would send the message to your backend
+      // console.log("Sending message:", newMessage);
+      setNewMessage("");
+    }
+  };
+
+  if (!selectedChat) {
+    return (
+      <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-md">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              WhatsApp Web
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Send and receive messages without keeping your phone online.
+            </p>
+            <p className="text-gray-500 text-sm">
+              Use WhatsApp on up to 4 linked devices and 1 phone at the same
+              time.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 flex flex-col bg-gray-100">
+      {/* Chat Header */}
+      <div className="bg-gray-200 px-4 py-3 flex items-center justify-between border-b border-gray-300">
+        <div className="flex items-center">
+          <button
+            className="md:hidden mr-3 text-gray-600"
+            onClick={() => setSelectedChat(null)}
+          >
+            <FaArrowLeft />
+          </button>
+          <img
+            src={selectedChat.avatar}
+            alt={selectedChat.name}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+          <div className="ml-3">
+            <h3 className="font-semibold text-gray-800">{selectedChat.name}</h3>
+            <p className="text-xs text-gray-600">
+              {selectedChat.isOnline
+                ? "Online"
+                : selectedChat.lastSeen || "Click here for contact info"}
+            </p>
+          </div>
+        </div>
+        <div className="flex space-x-4 text-gray-600">
+          <FaVideo className="cursor-pointer hover:text-whatsapp-green" />
+          <FaPhone className="cursor-pointer hover:text-whatsapp-green" />
+          <FaSearch className="cursor-pointer hover:text-whatsapp-green" />
+          <FaEllipsisV className="cursor-pointer hover:text-whatsapp-green" />
+        </div>
+      </div>
+
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 bg-chat-bg bg-repeat bg-center bg-[#e5ddd5]">
+        <div className="max-w-4xl mx-auto">
+          {messages.map((message) => (
+            <ViewMessage key={message.id} message={message} />
+          ))}
+        </div>
+      </div>
+
+      {/* Message Input */}
+      <div className="bg-gray-200 px-4 py-3">
+        <form
+          onSubmit={handleSendMessage}
+          className="flex items-center space-x-2"
+        >
+          <button
+            type="button"
+            className="text-gray-600 hover:text-whatsapp-green p-2"
+          >
+            <FaSmile size={20} />
+          </button>
+          <button
+            type="button"
+            className="text-gray-600 hover:text-whatsapp-green p-2"
+          >
+            <FaPaperclip size={20} />
+          </button>
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Type a message"
+              className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-whatsapp-green"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+            />
+          </div>
+          {newMessage.trim() ? (
+            <button
+              type="submit"
+              className="bg-whatsapp-green text-white p-2 rounded-full hover:bg-whatsapp-teal transition-colors"
+            >
+              <FaPaperPlane size={16} />
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="text-gray-600 hover:text-whatsapp-green p-2"
+            >
+              <FaMicrophone size={20} />
+            </button>
+          )}
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default ChatArea;
