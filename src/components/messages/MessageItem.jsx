@@ -10,7 +10,7 @@ export const ViewMessage = ({ message }) => {
       <div
         className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
           message.sender_id === 1
-            ? "bg-whatsapp-green text-white rounded-br-none"
+            ? "bg-whatsapp-green-500 text-white rounded-br-none"
             : "bg-gray-200 text-gray-800 rounded-bl-none"
         }`}
       >

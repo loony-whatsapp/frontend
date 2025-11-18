@@ -22,7 +22,7 @@ export default function Contacts() {
               alt="Profile"
               className="w-10 h-10 rounded-full object-cover"
             />
-            <div className="absolute bottom-0 right-0 bg-whatsapp-green text-white rounded-full p-1">
+            <div className="absolute bottom-0 right-0 bg-whatsapp-green-500 text-white rounded-full p-1">
               <FaPlus size={12} />
             </div>
           </div>

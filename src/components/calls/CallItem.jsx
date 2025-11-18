@@ -35,10 +35,10 @@ const CallItem = ({ call }) => {
         </div>
       </div>
       <div className="flex space-x-3">
-        <button className="text-whatsapp-green hover:text-whatsapp-teal">
+        <button className="text-whatsapp-green-500 hover:text-whatsapp-teal-500">
           <FaPhone />
         </button>
-        <button className="text-whatsapp-green hover:text-whatsapp-teal">
+        <button className="text-whatsapp-green-500 hover:text-whatsapp-teal-500">
           <FaVideo />
         </button>
       </div>

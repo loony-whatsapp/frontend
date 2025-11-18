@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import ChatArea from "./components/ChatArea";
-import {
-  contacts,
-  groups,
-  communities,
-  calls,
-  messages,
-  statusUpdates,
-} from "./data/mockData";
 import { AppProvider } from "./context/AppContext";
 
 function App() {
@@ -17,7 +9,7 @@ function App() {
   return (
     <div className="h-screen bg-gray-100 flex flex-col">
       {/* Mobile Header */}
-      <div className="md:hidden bg-whatsapp-green text-white p-4">
+      <div className="md:hidden bg-green-500 text-white p-4">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold">WhatsApp</h1>
           <div className="flex space-x-4">

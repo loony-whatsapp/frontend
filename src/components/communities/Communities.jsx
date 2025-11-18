@@ -11,7 +11,7 @@ export default function Communities() {
 
   return (
     <div className="flex-1 overflow-y-auto p-4">
-      <div className="bg-whatsapp-green text-gray p-4 rounded-lg mb-4">
+      <div className="bg-whatsapp-green-500 text-gray p-4 rounded-lg mb-4">
         <h3 className="font-bold text-lg">Communities</h3>
         <p className="text-sm opacity-90">
           Stay connected with your communities

@@ -1,36 +1,66 @@
 @import "tailwindcss";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@theme {
+  --color-whatsapp-green-50: #e8f6f4;
+  --color-whatsapp-green-100: #c5ebe6;
+  --color-whatsapp-green-200: #9edfd5;
+  --color-whatsapp-green-300: #6fd0c1;
+  --color-whatsapp-green-400: #3cbfa9;
+  --color-whatsapp-green-500: #128c7e; /* main */
+  --color-whatsapp-green-600: #0f766b;
+  --color-whatsapp-green-700: #0b5a52;
+  --color-whatsapp-green-800: #083f3a;
+  --color-whatsapp-green-900: #042523;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
+@theme {
+  --color-whatsapp-teal-50: #e6f2f1;
+  --color-whatsapp-teal-100: #c0dfdd;
+  --color-whatsapp-teal-200: #97cac6;
+  --color-whatsapp-teal-300: #61aca9;
+  --color-whatsapp-teal-400: #2d8e8c;
+  --color-whatsapp-teal-500: #075e54; /* main */
+  --color-whatsapp-teal-600: #064f46;
+  --color-whatsapp-teal-700: #053c35;
+  --color-whatsapp-teal-800: #032a25;
+  --color-whatsapp-teal-900: #021918;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
+@theme {
+  --color-whatsapp-light-50: #e8fdf3;
+  --color-whatsapp-light-100: #cbfbe3;
+  --color-whatsapp-light-200: #a4f8d0;
+  --color-whatsapp-light-300: #6ff3b7;
+  --color-whatsapp-light-400: #3eec9c;
+  --color-whatsapp-light-500: #25d366; /* main */
+  --color-whatsapp-light-600: #1fb95a;
+  --color-whatsapp-light-700: #198d48;
+  --color-whatsapp-light-800: #116633;
+  --color-whatsapp-light-900: #0b3d20;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
+@theme {
+  --color-whatsapp-blue-50: #e9f8fe;
+  --color-whatsapp-blue-100: #c7edfc;
+  --color-whatsapp-blue-200: #9adff9;
+  --color-whatsapp-blue-300: #67cff5;
+  --color-whatsapp-blue-400: #3abdf2;
+  --color-whatsapp-blue-500: #34b7f1; /* main */
+  --color-whatsapp-blue-600: #2198cd;
+  --color-whatsapp-blue-700: #187199;
+  --color-whatsapp-blue-800: #104c66;
+  --color-whatsapp-blue-900: #092a3a;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
-/* Chat background pattern */
-.bg-chat-bg {
-  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d1d7db' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+@theme {
+  --color-whatsapp-gray-50: #f5f5f5;
+  --color-whatsapp-gray-100: #e1e1e1;
+  --color-whatsapp-gray-200: #cfcfcf;
+  --color-whatsapp-gray-300: #b1b1b1;
+  --color-whatsapp-gray-400: #9e9e9e;
+  --color-whatsapp-gray-500: #7e7e7e;
+  --color-whatsapp-gray-600: #626262;
+  --color-whatsapp-gray-700: #515151;
+  --color-whatsapp-gray-800: #3b3b3b;
+  --color-whatsapp-gray-900: #1f1f1f;
 }

@@ -79,10 +79,10 @@ const ChatArea = () => {
           </div>
         </div>
         <div className="flex space-x-4 text-gray-600">
-          <FaVideo className="cursor-pointer hover:text-whatsapp-green" />
-          <FaPhone className="cursor-pointer hover:text-whatsapp-green" />
-          <FaSearch className="cursor-pointer hover:text-whatsapp-green" />
-          <FaEllipsisV className="cursor-pointer hover:text-whatsapp-green" />
+          <FaVideo className="cursor-pointer hover:text-whatsapp-green-500" />
+          <FaPhone className="cursor-pointer hover:text-whatsapp-green-500" />
+          <FaSearch className="cursor-pointer hover:text-whatsapp-green-500" />
+          <FaEllipsisV className="cursor-pointer hover:text-whatsapp-green-500" />
         </div>
       </div>
 
@@ -108,13 +108,13 @@ const ChatArea = () => {
         >
           <button
             type="button"
-            className="text-gray-600 hover:text-whatsapp-green p-2"
+            className="text-gray-600 hover:text-whatsapp-green-500 p-2"
           >
             <FaSmile size={20} />
           </button>
           <button
             type="button"
-            className="text-gray-600 hover:text-whatsapp-green p-2"
+            className="text-gray-600 hover:text-whatsapp-green-500 p-2"
           >
             <FaPaperclip size={20} />
           </button>
@@ -130,14 +130,14 @@ const ChatArea = () => {
           {newMessage.trim() ? (
             <button
               type="submit"
-              className="bg-whatsapp-green text-white p-2 rounded-full hover:bg-whatsapp-teal transition-colors"
+              className="bg-whatsapp-green-500 text-white p-2 rounded-full hover:bg-whatsapp-teal-500 transition-colors"
             >
               <FaPaperPlane size={16} />
             </button>
           ) : (
             <button
               type="button"
-              className="text-gray-600 hover:text-whatsapp-green p-2"
+              className="text-gray-600 hover:text-whatsapp-green-500 p-2"
             >
               <FaMicrophone size={20} />
             </button>

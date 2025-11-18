@@ -52,8 +52,8 @@ const Sidebar = () => {
             </span>
           </div>
           <div className="flex space-x-4 text-gray-600">
-            <FaCamera className="cursor-pointer hover:text-whatsapp-green" />
-            <FaEllipsisV className="cursor-pointer hover:text-whatsapp-green" />
+            <FaCamera className="cursor-pointer hover:text-whatsapp-green-500" />
+            <FaEllipsisV className="cursor-pointer hover:text-whatsapp-green-500" />
           </div>
         </div>
 
@@ -65,7 +65,7 @@ const Sidebar = () => {
           <input
             type="text"
             placeholder="Search or start new chat"
-            className="w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-whatsapp-green focus:border-transparent"
+            className="w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-whatsapp-green-500 focus:border-transparent"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -85,8 +85,8 @@ const Sidebar = () => {
             key={key}
             className={`flex-1 py-3 flex items-center justify-center border-b-2 transition-colors ${
               viewContext === key
-                ? "border-whatsapp-green text-whatsapp-green"
-                : "border-transparent text-gray-500 hover:text-whatsapp-green"
+                ? "border-whatsapp-green-500 text-whatsapp-green-500"
+                : "border-transparent text-gray-500 hover:text-whatsapp-green-500"
             }`}
             onClick={() => changeTab(key)}
           >
