@@ -76,11 +76,11 @@ const Sidebar = ({ selectedChat, setSelectedChat }) => {
       {/* Navigation Tabs */}
       <div className="flex border-b border-gray-300 bg-white">
         {[
-          { key: "contacts", icon: FaCircle, label: "Contacts" },
           { key: "chats", icon: FaComment, label: "Chats" },
           { key: "groups", icon: FaUsers, label: "Groups" },
           { key: "communities", icon: FaUsers, label: "Communities" },
           { key: "calls", icon: FaPhone, label: "Calls" },
+          { key: "contacts", icon: FaCircle, label: "Contacts" },
         ].map(({ key, icon: Icon, label }) => (
           <button
             key={key}
@@ -101,11 +101,11 @@ const Sidebar = ({ selectedChat, setSelectedChat }) => {
 
       {/* Content */}
       {/* <AppProvider> */}
-      <Contacts />
       <Messages />
       <Groups />
       <Communities />
       <Calls />
+      <Contacts />
       {/* </AppProvider> */}
     </div>
   );

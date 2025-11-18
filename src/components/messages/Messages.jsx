@@ -1,15 +1,11 @@
 import { useState, useContext } from "react";
-import { contacts, groups } from "../../data/mockData";
 import { GroupMessageItem, MessageItem } from "./MessageItem";
 import { AppContext } from "../../context/AppContext";
 import { useMessages } from "../../hooks";
 import Empty from "../Empty";
 
-export default function Chats() {
+function RenderMessages() {
   const [messages] = useMessages();
-  const [selectedChat, setSelectedChat] = useState(null);
-  const { viewContext } = useContext(AppContext);
-  if (viewContext !== "chats") return null;
   if (!messages) return <Empty />;
 
   return (
@@ -31,4 +27,11 @@ export default function Chats() {
       ))}
     </div>
   );
+}
+
+export default function Messages() {
+  const [selectedChat, setSelectedChat] = useState(null);
+  const { viewContext } = useContext(AppContext);
+  if (viewContext !== "chats") return null;
+  return <RenderMessages />;
 }

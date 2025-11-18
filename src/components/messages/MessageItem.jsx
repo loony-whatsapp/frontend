@@ -53,7 +53,7 @@ export const MessageItem = ({ message, onClick }) => {
           </h3>
           {/* <span className="text-xs text-gray-500">{message.lastSeen}</span> */}
         </div>
-        {/* <p className="text-sm text-gray-600 truncate">{message.status}</p> */}
+        <p className="text-sm text-gray-600 truncate">{message.body_text}</p>
       </div>
     </div>
   );
@@ -83,7 +83,7 @@ export const GroupMessageItem = ({ message, onClick }) => {
           <h3 className="font-semibold text-gray-800">{message.group_name}</h3>
           {/* <span className="text-xs text-gray-500">{message.lastSeen}</span> */}
         </div>
-        {/* <p className="text-sm text-gray-600 truncate">{message.status}</p> */}
+        <p className="text-sm text-gray-600 truncate">{message.body_text}</p>
       </div>
     </div>
   );
