@@ -27,8 +27,7 @@ export const ViewMessage = ({ message }) => {
   );
 };
 
-export const MessageItem = ({ message, onClick }) => {
-  const isActive = false;
+export const MessageItem = ({ message, onClick, isActive }) => {
   return (
     <div
       className={`flex items-center p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200 ${

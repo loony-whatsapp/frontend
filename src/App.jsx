@@ -38,11 +38,7 @@ function App() {
             setSelectedChat={setSelectedChat}
           />
 
-          <ChatArea
-            selectedChat={selectedChat}
-            setSelectedChat={setSelectedChat}
-            messages={messages}
-          />
+          <ChatArea />
         </div>
       </AppProvider>
     </div>

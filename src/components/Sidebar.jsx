@@ -20,15 +20,14 @@ import Communities from "./communities/Communities";
 import { useUserInfo } from "../hooks";
 import { AppContext } from "../context/AppContext";
 
-const Sidebar = ({ selectedChat, setSelectedChat }) => {
-  const { viewContext, setAppContext } = useContext(AppContext);
-
-  // const [activeTab, setActiveTab] = useState("chats");
+const Sidebar = () => {
+  const { selectedChat, viewContext, setAppContext } = useContext(AppContext);
   const [searchTerm, setSearchTerm] = useState("");
-  const [user] = useUserInfo();
+  const [user] = useUserInfo(selectedChat?.uid || 1);
 
   const changeTab = (item) => {
     setAppContext({
+      selectedChat,
       viewContext: item,
     });
   };

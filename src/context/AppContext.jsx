@@ -7,6 +7,7 @@ export const AppContext = createContext({
 export function AppProvider({ children }) {
   const [state, setAppContext] = useState({
     viewContext: "chats",
+    selectedChat: null,
   });
 
   return (

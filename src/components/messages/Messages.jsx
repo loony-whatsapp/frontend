@@ -6,23 +6,32 @@ import Empty from "../Empty";
 
 function RenderMessages() {
   const [messages] = useMessages();
+  const { setAppContext, viewContext, selectedChat } = useContext(AppContext);
   if (!messages) return <Empty />;
+
+  const onClickItem = (item) => {
+    setAppContext({
+      viewContext,
+      selectedChat: item,
+    });
+  };
 
   return (
     <div className="flex-1 overflow-y-auto">
-      {messages.users.map((item, index) => (
+      {messages.users.map((message, index) => (
         <MessageItem
           key={index}
-          message={item}
-          onClick={() => setSelectedChat(item)}
+          message={message}
+          isActive={selectedChat?.msg_id === message.msg_id}
+          onClick={() => onClickItem(message)}
         />
       ))}
-      {messages.groups.map((item, index) => (
+      {messages.groups.map((message, index) => (
         <GroupMessageItem
           key={index}
-          message={item}
+          message={message}
           // isActive={selectedChat?.id === item.id}
-          onClick={() => setSelectedChat(item)}
+          onClick={() => {}}
         />
       ))}
     </div>
@@ -30,7 +39,6 @@ function RenderMessages() {
 }
 
 export default function Messages() {
-  const [selectedChat, setSelectedChat] = useState(null);
   const { viewContext } = useContext(AppContext);
   if (viewContext !== "chats") return null;
   return <RenderMessages />;

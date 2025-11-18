@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   FaSearch,
   FaEllipsisV,
@@ -11,8 +11,12 @@ import {
   FaArrowLeft,
 } from "react-icons/fa";
 import { ViewMessage } from "./messages/MessageItem";
+import { AppContext } from "../context/AppContext";
+import { useMessagesFromId } from "../hooks";
 
-const ChatArea = ({ selectedChat, setSelectedChat, messages }) => {
+const ChatArea = () => {
+  const { selectedChat, setAppContext } = useContext(AppContext);
+  const [messages] = useMessagesFromId(selectedChat?.other_user_id);
   const [newMessage, setNewMessage] = useState("");
 
   const handleSendMessage = (e) => {
@@ -44,7 +48,7 @@ const ChatArea = ({ selectedChat, setSelectedChat, messages }) => {
       </div>
     );
   }
-
+  console.log(messages);
   return (
     <div className="flex-1 flex flex-col bg-gray-100">
       {/* Chat Header */}
@@ -57,12 +61,14 @@ const ChatArea = ({ selectedChat, setSelectedChat, messages }) => {
             <FaArrowLeft />
           </button>
           <img
-            src={selectedChat.avatar}
-            alt={selectedChat.name}
+            src={`http://localhost:2000/file/${selectedChat.other_user_id}`}
+            alt={selectedChat.other_user_name}
             className="w-10 h-10 rounded-full object-cover"
           />
           <div className="ml-3">
-            <h3 className="font-semibold text-gray-800">{selectedChat.name}</h3>
+            <h3 className="font-semibold text-gray-800">
+              {selectedChat.other_user_name}
+            </h3>
             <p className="text-xs text-gray-600">
               {selectedChat.isOnline
                 ? "Online"
@@ -81,9 +87,10 @@ const ChatArea = ({ selectedChat, setSelectedChat, messages }) => {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 bg-chat-bg bg-repeat bg-center bg-[#e5ddd5]">
         <div className="max-w-4xl mx-auto">
-          {messages.map((message) => (
-            <ViewMessage key={message.id} message={message} />
-          ))}
+          {messages &&
+            messages.map((message) => (
+              <ViewMessage key={message.id} message={message} />
+            ))}
         </div>
       </div>
 
