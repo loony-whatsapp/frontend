@@ -6,14 +6,14 @@ import Empty from "../Empty";
 
 function RenderMessages() {
   const [messages] = useMessages();
-  const { setAppContext, viewContext, selectedChat } = useContext(AppContext);
+  const { setAppContext, selectedChat } = useContext(AppContext);
   if (!messages) return <Empty />;
 
   const onClickItem = (item) => {
-    setAppContext({
-      viewContext,
+    setAppContext((prev) => ({
+      ...prev,
       selectedChat: item,
-    });
+    }));
   };
 
   return (
@@ -26,14 +26,14 @@ function RenderMessages() {
           onClick={() => onClickItem(message)}
         />
       ))}
-      {messages.groups.map((message, index) => (
+      {/* {messages.groups.map((message, index) => (
         <GroupMessageItem
           key={index}
           message={message}
           // isActive={selectedChat?.id === item.id}
           onClick={() => {}}
         />
-      ))}
+      ))} */}
     </div>
   );
 }

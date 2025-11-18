@@ -12,11 +12,13 @@ import {
 } from "react-icons/fa";
 import { ViewMessage } from "./messages/MessageItem";
 import { AppContext } from "../context/AppContext";
-import { useMessagesFromId } from "../hooks";
+import { useGroupMessagesFromId, useMessagesFromId } from "../hooks";
 
 const ChatArea = () => {
-  const { selectedChat, setAppContext } = useContext(AppContext);
+  const { selectedChat } = useContext(AppContext);
   const [messages] = useMessagesFromId(selectedChat?.other_user_id);
+  const [groupmessages] = useGroupMessagesFromId(selectedChat?.group_id);
+
   const [newMessage, setNewMessage] = useState("");
 
   const handleSendMessage = (e) => {
@@ -48,7 +50,7 @@ const ChatArea = () => {
       </div>
     );
   }
-  console.log(messages);
+
   return (
     <div className="flex-1 flex flex-col bg-gray-100">
       {/* Chat Header */}
@@ -89,6 +91,10 @@ const ChatArea = () => {
         <div className="max-w-4xl mx-auto">
           {messages &&
             messages.map((message) => (
+              <ViewMessage key={message.id} message={message} />
+            ))}
+          {groupmessages &&
+            groupmessages.map((message) => (
               <ViewMessage key={message.id} message={message} />
             ))}
         </div>

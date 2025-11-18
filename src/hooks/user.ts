@@ -6,6 +6,7 @@ import {
   getUserMessages,
   getUserCommunities,
   getMessagesFromId,
+  getGroupMessagesFromId,
 } from "loony-api";
 
 export const useUserInfo = (userId: number) => {
@@ -34,17 +35,17 @@ export const useContacts = () => {
   return [contacts, setContacts];
 };
 
-export const useGroups = () => {
+export const useGroups = (userId: number) => {
   const [groups, setGroups] = useState(null);
   useEffect(() => {
-    getUserGroups()
+    getUserGroups(userId)
       .then((res) => {
         setGroups(res.data);
       })
       .catch((e) => {
         console.log(e);
       });
-  }, []);
+  }, [userId]);
 
   return [groups, setGroups];
 };
@@ -77,6 +78,23 @@ export const useMessagesFromId = (userId: number) => {
         });
     }
   }, [userId]);
+
+  return [messages, setMessages];
+};
+
+export const useGroupMessagesFromId = (groupId: number) => {
+  const [messages, setMessages] = useState(null);
+  useEffect(() => {
+    if (groupId) {
+      getGroupMessagesFromId(groupId)
+        .then((res) => {
+          setMessages(res.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
+  }, [groupId]);
 
   return [messages, setMessages];
 };

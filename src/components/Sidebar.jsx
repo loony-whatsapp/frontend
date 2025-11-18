@@ -26,10 +26,10 @@ const Sidebar = () => {
   const [user] = useUserInfo(selectedChat?.uid || 1);
 
   const changeTab = (item) => {
-    setAppContext({
-      selectedChat,
+    setAppContext((prev) => ({
+      ...prev,
       viewContext: item,
-    });
+    }));
   };
 
   return (
