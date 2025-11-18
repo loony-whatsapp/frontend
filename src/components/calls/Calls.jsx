@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import { calls } from "../data/mockData";
+import { calls } from "../../data/mockData";
 import CallItem from "./CallItem";
-import { AppContext } from "../context/AppContext";
+import { AppContext } from "../../context/AppContext";
 
 export default function Calls() {
   const { viewContext } = useContext(AppContext);

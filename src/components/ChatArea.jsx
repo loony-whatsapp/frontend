@@ -10,7 +10,7 @@ import {
   FaVideo,
   FaArrowLeft,
 } from "react-icons/fa";
-import { ViewMessage } from "./MessageItem";
+import { ViewMessage } from "./messages/MessageItem";
 
 const ChatArea = ({ selectedChat, setSelectedChat, messages }) => {
   const [newMessage, setNewMessage] = useState("");

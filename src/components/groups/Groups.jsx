@@ -1,7 +1,8 @@
 import { useState, useContext } from "react";
 import GroupItem from "./GroupItem";
-import { AppContext } from "../context/AppContext";
-import { useGroups } from "../hooks";
+import { AppContext } from "../../context/AppContext";
+import { useGroups } from "../../hooks";
+import Empty from "../Empty";
 
 export default function Groups() {
   const [groups] = useGroups();
@@ -9,6 +10,7 @@ export default function Groups() {
 
   const { viewContext } = useContext(AppContext);
   if (viewContext !== "groups") return null;
+  if (!groups) return <Empty />;
 
   return (
     <div className="flex-1 overflow-y-auto">

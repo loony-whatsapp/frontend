@@ -1,14 +1,16 @@
 import { useContext } from "react";
 import { FaPlus } from "react-icons/fa";
-import { contacts, statusUpdates } from "../data/mockData";
-import { AppContext } from "../context/AppContext";
-import { useContacts } from "../hooks";
+import { contacts, statusUpdates } from "../../data/mockData";
+import { AppContext } from "../../context/AppContext";
+import { useContacts } from "../../hooks";
+import Empty from "../Empty";
 
 export default function Contacts() {
   const { viewContext } = useContext(AppContext);
   const [contacts] = useContacts();
 
   if (viewContext !== "contacts") return null;
+  if (!contacts) return <Empty />;
 
   return (
     <div className="flex-1 overflow-y-auto">

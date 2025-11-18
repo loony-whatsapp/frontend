@@ -21,9 +21,13 @@ export const useUserInfo = () => {
 export const useContacts = () => {
   const [contacts, setContacts] = useState(null);
   useEffect(() => {
-    getUserContacts().then((res) => {
-      setContacts(res.data);
-    });
+    getUserContacts()
+      .then((res) => {
+        setContacts(res.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }, []);
 
   return [contacts, setContacts];
@@ -32,9 +36,13 @@ export const useContacts = () => {
 export const useGroups = () => {
   const [groups, setGroups] = useState(null);
   useEffect(() => {
-    getUserGroups().then((res) => {
-      setGroups(res.data);
-    });
+    getUserGroups()
+      .then((res) => {
+        setGroups(res.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }, []);
 
   return [groups, setGroups];
@@ -43,9 +51,13 @@ export const useGroups = () => {
 export const useMessages = () => {
   const [messages, setMessages] = useState(null);
   useEffect(() => {
-    getUserMessages().then((res) => {
-      setMessages(res.data);
-    });
+    getUserMessages()
+      .then((res) => {
+        setMessages(res.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }, []);
 
   return [messages, setMessages];
@@ -54,9 +66,13 @@ export const useMessages = () => {
 export const useCommunities = () => {
   const [communities, setCommunities] = useState(null);
   useEffect(() => {
-    getUserCommunities().then((res) => {
-      setCommunities(res.data);
-    });
+    getUserCommunities()
+      .then((res) => {
+        setCommunities(res.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }, []);
 
   return [communities, setCommunities];

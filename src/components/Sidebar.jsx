@@ -10,17 +10,15 @@ import {
   FaPlus,
   FaCamera,
 } from "react-icons/fa";
-import Contacts from "./Contacts";
-import Groups from "./Groups";
-import { AppContext } from "../context/AppContext";
 
-import CallItem from "./CallItem";
+import Calls from "./calls/Calls";
+import Groups from "./groups/Groups";
+import Contacts from "./contacts/Contacts";
+import Messages from "./messages/Messages";
+import Communities from "./communities/Communities";
+
 import { useUserInfo } from "../hooks";
-import Contacts from "./Contacts";
-import Messages from "./Messages";
-import Groups from "./Groups";
-import Communities from "./Communities";
-import Calls from "./Calls";
+import { AppContext } from "../context/AppContext";
 
 const Sidebar = ({ selectedChat, setSelectedChat }) => {
   const { viewContext, setAppContext } = useContext(AppContext);

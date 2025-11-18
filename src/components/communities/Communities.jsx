@@ -1,11 +1,13 @@
 import { useContext } from "react";
-import { AppContext } from "../context/AppContext";
-import { useCommunities } from "../hooks";
+import { AppContext } from "../../context/AppContext";
+import { useCommunities } from "../../hooks";
+import Empty from "../Empty";
 
 export default function Communities() {
   const [communities] = useCommunities();
   const { viewContext } = useContext(AppContext);
-  if (viewContext !== "communities" || !communities) return null;
+  if (viewContext !== "communities") return null;
+  if (!communities) return <Empty />;
 
   return (
     <div className="flex-1 overflow-y-auto p-4">
