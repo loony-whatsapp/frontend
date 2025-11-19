@@ -77,13 +77,15 @@ const ChatArea = () => {
             <FaArrowLeft />
           </button>
           <img
-            src={`http://localhost:2000/file/${selectedChat.other_user_id}`}
-            alt={selectedChat.other_user_name}
+            src={`http://localhost:2000/file/${
+              selectedChat.other_user_id || selectedChat.group_id
+            }`}
+            alt={selectedChat.other_user_name || selectedChat.group_name}
             className="w-10 h-10 rounded-full object-cover"
           />
           <div className="ml-3">
             <h3 className="font-semibold text-gray-800">
-              {selectedChat.other_user_name}
+              {selectedChat.other_user_name || selectedChat.group_name}
             </h3>
             <p className="text-xs text-gray-600">
               {selectedChat.isOnline

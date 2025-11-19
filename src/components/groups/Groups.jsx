@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import GroupItem from "./GroupItem";
-import { AppContext } from "../../context/AppContext";
+import { AppContext, ViewContext } from "../../context/AppContext";
 import { useGroups } from "../../hooks";
 import Empty from "../Empty";
 
@@ -9,7 +9,7 @@ export default function Groups() {
   const { setAppContext, selectedChat } = useContext(AppContext);
 
   const { viewContext } = useContext(AppContext);
-  if (viewContext !== "groups") return null;
+  if (viewContext !== ViewContext.GM) return null;
   if (!groups) return <Empty />;
 
   const onClickItem = (item) => {

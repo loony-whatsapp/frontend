@@ -17,13 +17,27 @@ import Contacts from "./contacts/Contacts";
 import Messages from "./messages/Messages";
 import Communities from "./communities/Communities";
 
-import { useUserInfo } from "../hooks";
-import { AppContext } from "../context/AppContext";
+import { useGroupInfo, useUserInfo } from "../hooks";
+import { AppContext, ViewContext } from "../context/AppContext";
+
+const TABS = [
+  { key: ViewContext.DM, icon: FaComment, label: "Chats" },
+  { key: ViewContext.GM, icon: FaUsers, label: "Groups" },
+  { key: ViewContext.COMMS, icon: FaUsers, label: "Communities" },
+  { key: ViewContext.CALLS, icon: FaPhone, label: "Calls" },
+  { key: ViewContext.CONTACTS, icon: FaCircle, label: "Contacts" },
+];
+
+const UserInfo = () => {
+  return;
+};
+const GroupInfo = () => {};
 
 const Sidebar = () => {
   const { selectedChat, viewContext, setAppContext } = useContext(AppContext);
   const [searchTerm, setSearchTerm] = useState("");
-  const [user] = useUserInfo(selectedChat?.uid || 1);
+  const [userInfo] = useUserInfo(1);
+  // const [groupInfo] = useGroupInfo(selectedChat?.group_id || null);
 
   const changeTab = (item) => {
     setAppContext((prev) => ({
@@ -40,15 +54,15 @@ const Sidebar = () => {
           <div className="flex items-center">
             <img
               src={
-                user
-                  ? `http://localhost:2000/file/${user.uid}`
+                userInfo
+                  ? `http://localhost:2000/file/${userInfo.uid}`
                   : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face"
               }
               alt="Profile"
               className="w-10 h-10 rounded-full object-cover"
             />
             <span className="ml-3 font-semibold">
-              {user && user.display_name}
+              {userInfo && userInfo.display_name}
             </span>
           </div>
           <div className="flex space-x-4 text-gray-600">
@@ -74,13 +88,7 @@ const Sidebar = () => {
 
       {/* Navigation Tabs */}
       <div className="flex border-b border-gray-300 bg-white">
-        {[
-          { key: "chats", icon: FaComment, label: "Chats" },
-          { key: "groups", icon: FaUsers, label: "Groups" },
-          { key: "communities", icon: FaUsers, label: "Communities" },
-          { key: "calls", icon: FaPhone, label: "Calls" },
-          { key: "contacts", icon: FaCircle, label: "Contacts" },
-        ].map(({ key, icon: Icon, label }) => (
+        {TABS.map(({ key, icon: Icon, label }) => (
           <button
             key={key}
             className={`flex-1 py-3 flex items-center justify-center border-b-2 transition-colors ${

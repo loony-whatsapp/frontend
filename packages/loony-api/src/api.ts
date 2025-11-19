@@ -7,6 +7,8 @@ export const register = (creds) => authHttpClient.post("/signup", creds);
 /** User */
 export const getUserInfo = (userId) =>
   authHttpClient.get("/user/user_info" + "/" + userId);
+export const getGroupInfo = (group_id) =>
+  authHttpClient.get("/user/groupInfo" + "/" + group_id);
 export const getUserContacts = () => authHttpClient.get("/user/contacts");
 export const getUserGroups = (userId) =>
   authHttpClient.get("/user/groups" + "/" + userId);

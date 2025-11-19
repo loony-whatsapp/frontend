@@ -9,17 +9,33 @@ import {
   getGroupMessagesFromId,
   newMessage,
   newGroupMessage,
+  getGroupInfo,
 } from "loony-api";
 
 export const useUserInfo = (userId: number) => {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    getUserInfo(userId).then((res) => {
-      setUser(res.data);
-    });
+    if (userId) {
+      getUserInfo(userId).then((res) => {
+        setUser(res.data);
+      });
+    }
   }, [userId]);
 
   return [user, setUser];
+};
+
+export const useGroupInfo = (groupId: number) => {
+  const [group, setGroupInfo] = useState(null);
+  useEffect(() => {
+    if (groupId) {
+      getGroupInfo(groupId).then((res) => {
+        setGroupInfo(res.data);
+      });
+    }
+  }, [groupId]);
+
+  return [group, setGroupInfo];
 };
 
 export const useContacts = () => {

@@ -1,6 +1,6 @@
-import { useState, useContext } from "react";
-import { GroupMessageItem, MessageItem } from "./MessageItem";
-import { AppContext } from "../../context/AppContext";
+import { useContext } from "react";
+import { MessageItem, GroupMessageItem } from "./MessageItem";
+import { AppContext, ViewContext } from "../../context/AppContext";
 import { useMessages } from "../../hooks";
 import Empty from "../Empty";
 
@@ -9,10 +9,11 @@ function RenderMessages() {
   const { setAppContext, selectedChat } = useContext(AppContext);
   if (!messages) return <Empty />;
 
-  const onClickItem = (item) => {
+  const onClickItem = (item, vc) => {
     setAppContext((prev) => ({
       ...prev,
       selectedChat: item,
+      sideViewContext: vc,
     }));
   };
 
@@ -23,23 +24,23 @@ function RenderMessages() {
           key={index}
           message={message}
           isActive={selectedChat?.msg_id === message.msg_id}
-          onClick={() => onClickItem(message)}
+          onClick={() => onClickItem(message, ViewContext.DM)}
         />
       ))}
-      {/* {messages.groups.map((message, index) => (
+      {messages.groups.map((message, index) => (
         <GroupMessageItem
           key={index}
           message={message}
           // isActive={selectedChat?.id === item.id}
-          onClick={() => {}}
+          onClick={() => onClickItem(message, ViewContext.GM)}
         />
-      ))} */}
+      ))}
     </div>
   );
 }
 
 export default function Messages() {
   const { viewContext } = useContext(AppContext);
-  if (viewContext !== "chats") return null;
+  if (viewContext !== ViewContext.DM) return null;
   return <RenderMessages />;
 }

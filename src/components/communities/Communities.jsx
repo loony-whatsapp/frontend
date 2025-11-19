@@ -1,12 +1,12 @@
 import { useContext } from "react";
-import { AppContext } from "../../context/AppContext";
+import { AppContext, ViewContext } from "../../context/AppContext";
 import { useCommunities } from "../../hooks";
 import Empty from "../Empty";
 
 export default function Communities() {
   const [communities] = useCommunities();
   const { viewContext } = useContext(AppContext);
-  if (viewContext !== "communities") return null;
+  if (viewContext !== ViewContext.COMMS) return null;
   if (!communities) return <Empty />;
 
   return (
