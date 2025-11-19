@@ -28,11 +28,6 @@ const TABS = [
   { key: ViewContext.CONTACTS, icon: FaCircle, label: "Contacts" },
 ];
 
-const UserInfo = () => {
-  return;
-};
-const GroupInfo = () => {};
-
 const Sidebar = () => {
   const { selectedChat, viewContext, setAppContext } = useContext(AppContext);
   const [searchTerm, setSearchTerm] = useState("");
@@ -43,6 +38,7 @@ const Sidebar = () => {
     setAppContext((prev) => ({
       ...prev,
       viewContext: item,
+      chatAreaContext: ViewContext.None,
     }));
   };
 

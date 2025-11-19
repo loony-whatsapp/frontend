@@ -3,7 +3,7 @@ import {
   getUserInfo,
   getUserContacts,
   getUserGroups,
-  getUserMessages,
+  getUserDMAndGM,
   getUserCommunities,
   getMessagesFromId,
   getGroupMessagesFromId,
@@ -58,11 +58,11 @@ export const useGroups = (userId: number) => {
   return [groups, setGroups];
 };
 
-export const useMessages = (userId: number) => {
+export const useDMAndGM = (userId: number) => {
   const [messages, setMessages] = useState(null);
   useEffect(() => {
     if (userId) {
-      getUserMessages(userId)
+      getUserDMAndGM(userId)
         .then((res) => {
           setMessages(res.data);
         })
@@ -70,6 +70,9 @@ export const useMessages = (userId: number) => {
           console.log(e);
         });
     }
+    return () => {
+      setMessages(null);
+    };
   }, [userId]);
 
   return [messages, setMessages];

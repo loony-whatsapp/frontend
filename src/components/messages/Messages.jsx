@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { MessageItem, GroupMessageItem } from "./MessageItem";
 import { AppContext, ViewContext } from "../../context/AppContext";
-import { useMessages } from "../../hooks";
+import { useDMAndGM } from "../../hooks";
 import Empty from "../Empty";
 
 function RenderMessages() {
-  const [messages] = useMessages(1);
+  const [messages] = useDMAndGM(1);
   const { setAppContext, selectedChat } = useContext(AppContext);
   if (!messages) return <Empty />;
 
@@ -13,7 +13,7 @@ function RenderMessages() {
     setAppContext((prev) => ({
       ...prev,
       selectedChat: item,
-      sideViewContext: vc,
+      chatAreaContext: vc,
     }));
   };
 

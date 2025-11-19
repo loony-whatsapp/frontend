@@ -11,7 +11,7 @@ import {
   FaArrowLeft,
 } from "react-icons/fa";
 import { ViewMessage } from "./messages/MessageItem";
-import { AppContext } from "../context/AppContext";
+import { AppContext, ViewContext } from "../context/AppContext";
 import {
   useGroupMessagesFromId,
   useMessagesFromId,
@@ -19,7 +19,7 @@ import {
 } from "../hooks";
 
 const ChatArea = () => {
-  const { selectedChat } = useContext(AppContext);
+  const { selectedChat, chatAreaContext } = useContext(AppContext);
   const [messages] = useMessagesFromId(1, selectedChat?.other_user_id);
   const [groupmessages] = useGroupMessagesFromId(selectedChat?.group_id);
   const sendNewMessage = useNewMessage();
@@ -44,7 +44,7 @@ const ChatArea = () => {
     }
   };
 
-  if (!selectedChat) {
+  if (chatAreaContext == ViewContext.None || !selectedChat) {
     return (
       <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-gray-100">
         <div className="text-center">
@@ -105,13 +105,15 @@ const ChatArea = () => {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 bg-chat-bg bg-repeat bg-center bg-[#e5ddd5]">
         <div className="max-w-4xl mx-auto">
-          {messages &&
+          {chatAreaContext === ViewContext.DM &&
+            messages &&
             messages.map((message) => (
-              <ViewMessage key={message.id} message={message} />
+              <ViewMessage key={message.msg_id} message={message} />
             ))}
-          {groupmessages &&
+          {chatAreaContext === ViewContext.GM &&
+            groupmessages &&
             groupmessages.map((message) => (
-              <ViewMessage key={message.id} message={message} />
+              <ViewMessage key={message.msg_id} message={message} />
             ))}
         </div>
       </div>

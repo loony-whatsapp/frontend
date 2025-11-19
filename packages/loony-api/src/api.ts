@@ -13,7 +13,7 @@ export const getUserContacts = (userId) =>
   authHttpClient.get(`/user/${userId}/contacts`);
 export const getUserGroups = (userId) =>
   authHttpClient.get(`/user/${userId}/groups`);
-export const getUserMessages = (userId) =>
+export const getUserDMAndGM = (userId) =>
   authHttpClient.get(`/user/${userId}/dmAndgm`);
 export const getMessagesFromId = (userId, otherUserId) =>
   authHttpClient.get(`/user/${userId}/${otherUserId}/messagesFrom`);

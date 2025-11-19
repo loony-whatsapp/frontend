@@ -1,6 +1,7 @@
 import { createContext, SetStateAction, useState } from "react";
 
 export enum ViewContext {
+  None,
   DM,
   GM,
   COMMS,
@@ -13,7 +14,7 @@ export const AppContext = createContext<any>(null);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, setAppContext] = useState({
     viewContext: ViewContext.DM,
-    sideViewContext: null,
+    chatAreaContext: null,
     selectedChat: null,
   });
 

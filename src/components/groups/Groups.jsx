@@ -16,6 +16,7 @@ export default function Groups() {
     setAppContext((prev) => ({
       ...prev,
       selectedChat: item,
+      chatAreaContext: ViewContext.GM,
     }));
   };
 
