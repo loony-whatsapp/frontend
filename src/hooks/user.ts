@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   getUserInfo,
   getUserContacts,
@@ -7,7 +7,9 @@ import {
   getUserCommunities,
   getMessagesFromId,
   getGroupMessagesFromId,
+  newMessage,
 } from "loony-api";
+import { body } from "framer-motion/client";
 
 export const useUserInfo = (userId: number) => {
   const [user, setUser] = useState(null);
@@ -97,6 +99,20 @@ export const useGroupMessagesFromId = (groupId: number) => {
   }, [groupId]);
 
   return [messages, setMessages];
+};
+
+export const useNewMessage = () => {
+  return {
+    newMessage: (x: any) => {
+      newMessage(x)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  };
 };
 
 export const useCommunities = () => {

@@ -12,21 +12,27 @@ import {
 } from "react-icons/fa";
 import { ViewMessage } from "./messages/MessageItem";
 import { AppContext } from "../context/AppContext";
-import { useGroupMessagesFromId, useMessagesFromId } from "../hooks";
+import {
+  useGroupMessagesFromId,
+  useMessagesFromId,
+  useNewMessage,
+} from "../hooks";
 
 const ChatArea = () => {
   const { selectedChat } = useContext(AppContext);
   const [messages] = useMessagesFromId(selectedChat?.other_user_id);
   const [groupmessages] = useGroupMessagesFromId(selectedChat?.group_id);
-
+  const sendNewMessage = useNewMessage();
   const [newMessage, setNewMessage] = useState("");
 
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (newMessage.trim()) {
-      // In a real app, you would send the message to your backend
-      // console.log("Sending message:", newMessage);
       setNewMessage("");
+      sendNewMessage.newMessage({
+        other_user_id: selectedChat?.other_user_id,
+        body_text: newMessage,
+      });
     }
   };
 

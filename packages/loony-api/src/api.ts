@@ -15,5 +15,7 @@ export const getMessagesFromId = (userId) =>
   authHttpClient.get("/user/messagesFrom" + "/" + userId);
 export const getGroupMessagesFromId = (groupId) =>
   authHttpClient.get("/user/messagesFrom/group" + "/" + groupId);
+export const newMessage = (body) =>
+  authHttpClient.post("/user/newMessage", body);
 
 export const getUserCommunities = () => authHttpClient.get("/user/communities");
