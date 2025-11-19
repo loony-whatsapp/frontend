@@ -28,11 +28,19 @@ const ChatArea = () => {
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (newMessage.trim()) {
-      setNewMessage("");
-      sendNewMessage.newMessage({
-        other_user_id: selectedChat?.other_user_id,
-        body_text: newMessage,
-      });
+      if (selectedChat?.group_id) {
+        sendNewMessage.newGroupMessage({
+          group_id: selectedChat?.group_id,
+          body_text: newMessage,
+        });
+        setNewMessage("");
+      } else {
+        sendNewMessage.newMessage({
+          other_user_id: selectedChat?.other_user_id,
+          body_text: newMessage,
+        });
+        setNewMessage("");
+      }
     }
   };
 

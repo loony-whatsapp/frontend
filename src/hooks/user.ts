@@ -8,8 +8,8 @@ import {
   getMessagesFromId,
   getGroupMessagesFromId,
   newMessage,
+  newGroupMessage,
 } from "loony-api";
-import { body } from "framer-motion/client";
 
 export const useUserInfo = (userId: number) => {
   const [user, setUser] = useState(null);
@@ -105,6 +105,15 @@ export const useNewMessage = () => {
   return {
     newMessage: (x: any) => {
       newMessage(x)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    newGroupMessage: (x: any) => {
+      newGroupMessage(x)
         .then((res) => {
           console.log(res);
         })
