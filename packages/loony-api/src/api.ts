@@ -4,22 +4,29 @@ export const login = (creds) => authHttpClient.post("/login", creds);
 export const logout = () => authHttpClient.post("/logout");
 export const register = (creds) => authHttpClient.post("/signup", creds);
 
+const authUserId = 1;
+
 /** User */
 export const getUserInfo = (userId) =>
-  authHttpClient.get("/user/user_info" + "/" + userId);
-export const getGroupInfo = (group_id) =>
-  authHttpClient.get("/user/groupInfo" + "/" + group_id);
-export const getUserContacts = () => authHttpClient.get("/user/contacts");
+  authHttpClient.get(`/user/${userId}/userInfo`);
+export const getUserContacts = (userId) =>
+  authHttpClient.get(`/user/${userId}/contacts`);
 export const getUserGroups = (userId) =>
-  authHttpClient.get("/user/groups" + "/" + userId);
-export const getUserMessages = () => authHttpClient.get("/user/messages");
-export const getMessagesFromId = (userId) =>
-  authHttpClient.get("/user/messagesFrom" + "/" + userId);
-export const getGroupMessagesFromId = (groupId) =>
-  authHttpClient.get("/user/messagesFrom/group" + "/" + groupId);
+  authHttpClient.get(`/user/${userId}/groups`);
+export const getUserMessages = (userId) =>
+  authHttpClient.get(`/user/${userId}/dmAndgm`);
+export const getMessagesFromId = (userId, otherUserId) =>
+  authHttpClient.get(`/user/${userId}/${otherUserId}/messagesFrom`);
 export const newMessage = (body) =>
   authHttpClient.post("/user/newMessage", body);
-export const newGroupMessage = (body) =>
-  authHttpClient.post("/user/group/newMessage", body);
+export const getUserCommunities = (userId) =>
+  authHttpClient.get(`/user/${userId}/communities`);
 
-export const getUserCommunities = () => authHttpClient.get("/user/communities");
+/** Group */
+
+export const getGroupInfo = (groupId) =>
+  authHttpClient.get(`/group/${groupId}/groupInfo`);
+export const getGroupMessagesFromId = (groupId) =>
+  authHttpClient.get(`/group/${groupId}/groupMessages`);
+export const newGroupMessage = (body) =>
+  authHttpClient.post("/group/newMessage", body);

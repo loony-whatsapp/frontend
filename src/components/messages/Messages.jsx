@@ -5,7 +5,7 @@ import { useMessages } from "../../hooks";
 import Empty from "../Empty";
 
 function RenderMessages() {
-  const [messages] = useMessages();
+  const [messages] = useMessages(1);
   const { setAppContext, selectedChat } = useContext(AppContext);
   if (!messages) return <Empty />;
 

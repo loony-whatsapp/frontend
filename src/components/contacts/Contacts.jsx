@@ -7,7 +7,7 @@ import Empty from "../Empty";
 
 export default function Contacts() {
   const { viewContext } = useContext(AppContext);
-  const [contacts] = useContacts();
+  const [contacts] = useContacts(1);
 
   if (viewContext !== ViewContext.CONTACTS) return null;
   if (!contacts) return <Empty />;

@@ -4,7 +4,7 @@ import { useCommunities } from "../../hooks";
 import Empty from "../Empty";
 
 export default function Communities() {
-  const [communities] = useCommunities();
+  const [communities] = useCommunities(1);
   const { viewContext } = useContext(AppContext);
   if (viewContext !== ViewContext.COMMS) return null;
   if (!communities) return <Empty />;

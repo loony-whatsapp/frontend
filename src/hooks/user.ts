@@ -12,6 +12,7 @@ import {
   getGroupInfo,
 } from "loony-api";
 
+/** User */
 export const useUserInfo = (userId: number) => {
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -25,30 +26,19 @@ export const useUserInfo = (userId: number) => {
   return [user, setUser];
 };
 
-export const useGroupInfo = (groupId: number) => {
-  const [group, setGroupInfo] = useState(null);
-  useEffect(() => {
-    if (groupId) {
-      getGroupInfo(groupId).then((res) => {
-        setGroupInfo(res.data);
-      });
-    }
-  }, [groupId]);
-
-  return [group, setGroupInfo];
-};
-
-export const useContacts = () => {
+export const useContacts = (userId: number) => {
   const [contacts, setContacts] = useState(null);
   useEffect(() => {
-    getUserContacts()
-      .then((res) => {
-        setContacts(res.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }, []);
+    if (userId) {
+      getUserContacts(userId)
+        .then((res) => {
+          setContacts(res.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
+  }, [userId]);
 
   return [contacts, setContacts];
 };
@@ -68,26 +58,11 @@ export const useGroups = (userId: number) => {
   return [groups, setGroups];
 };
 
-export const useMessages = () => {
-  const [messages, setMessages] = useState(null);
-  useEffect(() => {
-    getUserMessages()
-      .then((res) => {
-        setMessages(res.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }, []);
-
-  return [messages, setMessages];
-};
-
-export const useMessagesFromId = (userId: number) => {
+export const useMessages = (userId: number) => {
   const [messages, setMessages] = useState(null);
   useEffect(() => {
     if (userId) {
-      getMessagesFromId(userId)
+      getUserMessages(userId)
         .then((res) => {
           setMessages(res.data);
         })
@@ -98,6 +73,55 @@ export const useMessagesFromId = (userId: number) => {
   }, [userId]);
 
   return [messages, setMessages];
+};
+
+export const useMessagesFromId = (userId: number, otherUserId: number) => {
+  const [messages, setMessages] = useState(null);
+  useEffect(() => {
+    if (userId && otherUserId) {
+      getMessagesFromId(userId, otherUserId)
+        .then((res) => {
+          setMessages(res.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
+  }, [userId, otherUserId]);
+
+  return [messages, setMessages];
+};
+
+export const useCommunities = (userId: number) => {
+  const [communities, setCommunities] = useState(null);
+  useEffect(() => {
+    if (userId) {
+      getUserCommunities(userId)
+        .then((res) => {
+          setCommunities(res.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
+  }, [userId]);
+
+  return [communities, setCommunities];
+};
+
+/** Group */
+
+export const useGroupInfo = (groupId: number) => {
+  const [group, setGroupInfo] = useState(null);
+  useEffect(() => {
+    if (groupId) {
+      getGroupInfo(groupId).then((res) => {
+        setGroupInfo(res.data);
+      });
+    }
+  }, [groupId]);
+
+  return [group, setGroupInfo];
 };
 
 export const useGroupMessagesFromId = (groupId: number) => {
@@ -116,6 +140,8 @@ export const useGroupMessagesFromId = (groupId: number) => {
 
   return [messages, setMessages];
 };
+
+/** Merged */
 
 export const useNewMessage = () => {
   return {
@@ -138,19 +164,4 @@ export const useNewMessage = () => {
         });
     },
   };
-};
-
-export const useCommunities = () => {
-  const [communities, setCommunities] = useState(null);
-  useEffect(() => {
-    getUserCommunities()
-      .then((res) => {
-        setCommunities(res.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }, []);
-
-  return [communities, setCommunities];
 };

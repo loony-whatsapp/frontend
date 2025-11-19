@@ -20,7 +20,7 @@ import {
 
 const ChatArea = () => {
   const { selectedChat } = useContext(AppContext);
-  const [messages] = useMessagesFromId(selectedChat?.other_user_id);
+  const [messages] = useMessagesFromId(1, selectedChat?.other_user_id);
   const [groupmessages] = useGroupMessagesFromId(selectedChat?.group_id);
   const sendNewMessage = useNewMessage();
   const [newMessage, setNewMessage] = useState("");
