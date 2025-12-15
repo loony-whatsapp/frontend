@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import {
   FaSearch,
   FaEllipsisV,
@@ -9,6 +9,7 @@ import {
   FaPhone,
   FaVideo,
   FaArrowLeft,
+  FaTimes,
 } from "react-icons/fa";
 import { ViewMessage, ViewPost } from "./messages/MessageItem";
 import { AppContext, ViewContext } from "../context/AppContext";
@@ -18,15 +19,50 @@ import {
   useNewMessage,
   useCommsPostsFromId,
 } from "../hooks";
+import EmojiPicker from "emoji-picker-react"; // Install with: npm install emoji-picker-react
 
 const ChatArea = () => {
-  const { selectedChat, chatAreaContext } = useContext(AppContext);
+  const { selectedChat, chatAreaContext, setSelectedChat } =
+    useContext(AppContext);
   const [messages] = useMessagesFromId(1, selectedChat?.other_user_id);
   const [groupmessages] = useGroupMessagesFromId(selectedChat?.group_id);
   const [commsPosts] = useCommsPostsFromId(selectedChat?.com_id);
 
   const sendNewMessage = useNewMessage();
   const [newMessage, setNewMessage] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSettings, setShowSettings] = useState(false);
+  const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
+
+  const emojiPickerRef = useRef(null);
+  const settingsRef = useRef(null);
+  const attachmentMenuRef = useRef(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target)
+      ) {
+        setShowEmojiPicker(false);
+      }
+      if (settingsRef.current && !settingsRef.current.contains(event.target)) {
+        setShowSettings(false);
+      }
+      if (
+        attachmentMenuRef.current &&
+        !attachmentMenuRef.current.contains(event.target)
+      ) {
+        setShowAttachmentMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -44,6 +80,55 @@ const ChatArea = () => {
         });
         setNewMessage("");
       }
+    }
+  };
+
+  const handleEmojiClick = (emojiData) => {
+    setNewMessage((prev) => prev + emojiData.emoji);
+  };
+
+  const handleAttachmentClick = (type) => {
+    // Here you can implement file upload functionality
+    console.log(`Attaching ${type}`);
+
+    // For demo purposes, we'll just add a placeholder message
+    const fileMessages = {
+      image: "📷 [Image attached]",
+      document: "📄 [Document attached]",
+      camera: "📸 [Photo taken]",
+      contact: "👤 [Contact shared]",
+    };
+
+    setNewMessage((prev) => prev + fileMessages[type]);
+    setShowAttachmentMenu(false);
+  };
+
+  const handleSearchMessages = () => {
+    if (!searchQuery.trim()) return;
+
+    // Implement search functionality here
+    console.log("Searching for:", searchQuery);
+    // You could filter messages based on searchQuery and highlight matches
+    alert(
+      `Searching for: "${searchQuery}"\n\nThis would filter messages containing the search term.`
+    );
+  };
+
+  const handleCall = (type) => {
+    const callType = type === "video" ? "Video" : "Audio";
+    alert(
+      `Initiating ${callType} call with ${
+        selectedChat?.other_user_name ||
+        selectedChat?.group_name ||
+        selectedChat?.com_name
+      }`
+    );
+  };
+
+  const handleSearchInChat = () => {
+    setShowSearch(!showSearch);
+    if (showSearch && searchQuery) {
+      handleSearchMessages();
     }
   };
 
@@ -69,9 +154,42 @@ const ChatArea = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-100">
+    <div className="flex-1 flex flex-col bg-gray-100 relative">
+      {/* Search Overlay */}
+      {showSearch && (
+        <div className="absolute top-0 left-0 right-0 bg-white z-50 shadow-lg">
+          <div className="flex items-center p-3">
+            <button
+              onClick={() => setShowSearch(false)}
+              className="text-gray-600 mr-3 p-2"
+            >
+              <FaTimes />
+            </button>
+            <div className="flex-1 flex items-center">
+              <input
+                type="text"
+                placeholder="Search messages..."
+                className="w-full px-4 py-2 rounded-lg focus:outline-none bg-gray-100"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleSearchMessages()}
+                autoFocus
+              />
+              {searchQuery && (
+                <button
+                  onClick={handleSearchMessages}
+                  className="ml-2 bg-whatsapp-green-500 text-white px-4 py-2 rounded-lg hover:bg-whatsapp-teal-500"
+                >
+                  Search
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Chat Header */}
-      <div className="bg-gray-200 px-4 py-3 flex items-center justify-between border-b border-gray-300">
+      <div className="bg-gray-200 px-4 py-3 flex items-center justify-between border-b border-gray-300 relative">
         <div className="flex items-center">
           <button
             className="md:hidden mr-3 text-gray-600"
@@ -105,11 +223,57 @@ const ChatArea = () => {
             </p>
           </div>
         </div>
-        <div className="flex space-x-4 text-gray-600">
-          <FaVideo className="cursor-pointer hover:text-whatsapp-green-500" />
-          <FaPhone className="cursor-pointer hover:text-whatsapp-green-500" />
-          <FaSearch className="cursor-pointer hover:text-whatsapp-green-500" />
-          <FaEllipsisV className="cursor-pointer hover:text-whatsapp-green-500" />
+
+        {/* Header Icons */}
+        <div className="flex space-x-4 text-gray-600 relative">
+          <FaVideo
+            className="cursor-pointer hover:text-whatsapp-green-500"
+            onClick={() => handleCall("video")}
+            title="Video call"
+          />
+          <FaPhone
+            className="cursor-pointer hover:text-whatsapp-green-500"
+            onClick={() => handleCall("audio")}
+            title="Voice call"
+          />
+          <FaSearch
+            className="cursor-pointer hover:text-whatsapp-green-500"
+            onClick={handleSearchInChat}
+            title="Search messages"
+          />
+          <div className="relative" ref={settingsRef}>
+            <FaEllipsisV
+              className="cursor-pointer hover:text-whatsapp-green-500"
+              onClick={() => setShowSettings(!showSettings)}
+              title="More options"
+            />
+
+            {/* Settings Dropdown */}
+            {showSettings && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 border border-gray-200">
+                <div className="py-1">
+                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Contact info
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Select messages
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Mute notifications
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Disappearing messages
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Clear chat
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Delete chat
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -135,23 +299,87 @@ const ChatArea = () => {
       </div>
 
       {/* Message Input */}
-      <div className="bg-gray-200 px-4 py-3">
+      <div className="bg-gray-200 px-4 py-3 relative">
+        {/* Emoji Picker */}
+        {showEmojiPicker && (
+          <div
+            ref={emojiPickerRef}
+            className="absolute bottom-full left-0 mb-2 z-50"
+          >
+            <EmojiPicker
+              onEmojiClick={handleEmojiClick}
+              theme="light"
+              searchDisabled={false}
+              skinTonesDisabled
+              width={350}
+              height={400}
+            />
+          </div>
+        )}
+
+        {/* Attachment Menu */}
+        {showAttachmentMenu && (
+          <div
+            ref={attachmentMenuRef}
+            className="absolute bottom-full left-12 mb-2 w-48 bg-white rounded-lg shadow-lg z-50 border border-gray-200"
+          >
+            <div className="py-2">
+              <button
+                onClick={() => handleAttachmentClick("image")}
+                className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <span className="mr-3">📷</span>
+                <span>Photos & Videos</span>
+              </button>
+              <button
+                onClick={() => handleAttachmentClick("document")}
+                className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <span className="mr-3">📄</span>
+                <span>Document</span>
+              </button>
+              <button
+                onClick={() => handleAttachmentClick("camera")}
+                className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <span className="mr-3">📸</span>
+                <span>Camera</span>
+              </button>
+              <button
+                onClick={() => handleAttachmentClick("contact")}
+                className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <span className="mr-3">👤</span>
+                <span>Contact</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         <form
           onSubmit={handleSendMessage}
           className="flex items-center space-x-2"
         >
           <button
             type="button"
-            className="text-gray-600 hover:text-whatsapp-green-500 p-2"
+            className="text-gray-600 hover:text-whatsapp-green-500 p-2 relative"
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            title="Emoji"
           >
             <FaSmile size={20} />
           </button>
-          <button
-            type="button"
-            className="text-gray-600 hover:text-whatsapp-green-500 p-2"
-          >
-            <FaPaperclip size={20} />
-          </button>
+
+          <div className="relative">
+            <button
+              type="button"
+              className="text-gray-600 hover:text-whatsapp-green-500 p-2"
+              onClick={() => setShowAttachmentMenu(!showAttachmentMenu)}
+              title="Attach file"
+            >
+              <FaPaperclip size={20} />
+            </button>
+          </div>
+
           <div className="flex-1">
             <input
               type="text"
@@ -161,10 +389,12 @@ const ChatArea = () => {
               onChange={(e) => setNewMessage(e.target.value)}
             />
           </div>
+
           {newMessage.trim() ? (
             <button
               type="submit"
               className="bg-whatsapp-green-500 text-white p-2 rounded-full hover:bg-whatsapp-teal-500 transition-colors"
+              title="Send message"
             >
               <FaPaperPlane size={16} />
             </button>
@@ -172,6 +402,8 @@ const ChatArea = () => {
             <button
               type="button"
               className="text-gray-600 hover:text-whatsapp-green-500 p-2"
+              title="Record voice message"
+              onClick={() => alert("Voice recording would start here")}
             >
               <FaMicrophone size={20} />
             </button>
