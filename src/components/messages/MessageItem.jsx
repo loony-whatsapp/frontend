@@ -27,6 +27,33 @@ export const ViewMessage = ({ message }) => {
   );
 };
 
+export const ViewPost = ({ message }) => {
+  return (
+    <div
+      className={`flex ${
+        message.author_id === 1 ? "justify-end" : "justify-start"
+      } mb-4`}
+    >
+      <div
+        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+          message.author_id === 1
+            ? "bg-whatsapp-green-500 text-white rounded-br-none"
+            : "bg-gray-200 text-gray-800 rounded-bl-none"
+        }`}
+      >
+        <p className="text-sm">{message.body_text}</p>
+        <div
+          className={`text-xs mt-1 ${
+            message.author_id === 1 ? "text-whatsapp-light" : "text-gray-500"
+          } text-right`}
+        >
+          {message.sent_at}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const MessageItem = ({ message, onClick, isActive }) => {
   return (
     <div

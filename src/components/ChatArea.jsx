@@ -10,18 +10,21 @@ import {
   FaVideo,
   FaArrowLeft,
 } from "react-icons/fa";
-import { ViewMessage } from "./messages/MessageItem";
+import { ViewMessage, ViewPost } from "./messages/MessageItem";
 import { AppContext, ViewContext } from "../context/AppContext";
 import {
   useGroupMessagesFromId,
   useMessagesFromId,
   useNewMessage,
+  useCommsPostsFromId,
 } from "../hooks";
 
 const ChatArea = () => {
   const { selectedChat, chatAreaContext } = useContext(AppContext);
   const [messages] = useMessagesFromId(1, selectedChat?.other_user_id);
   const [groupmessages] = useGroupMessagesFromId(selectedChat?.group_id);
+  const [commsPosts] = useCommsPostsFromId(selectedChat?.com_id);
+
   const sendNewMessage = useNewMessage();
   const [newMessage, setNewMessage] = useState("");
 
@@ -78,14 +81,22 @@ const ChatArea = () => {
           </button>
           <img
             src={`http://localhost:2000/file/${
-              selectedChat.other_user_id || selectedChat.group_id
+              selectedChat.other_user_id ||
+              selectedChat.group_id ||
+              selectedChat.com_id
             }`}
-            alt={selectedChat.other_user_name || selectedChat.group_name}
+            alt={
+              selectedChat.other_user_name ||
+              selectedChat.group_name ||
+              selectedChat.com_name
+            }
             className="w-10 h-10 rounded-full object-cover"
           />
           <div className="ml-3">
             <h3 className="font-semibold text-gray-800">
-              {selectedChat.other_user_name || selectedChat.group_name}
+              {selectedChat.other_user_name ||
+                selectedChat.group_name ||
+                selectedChat.com_name}
             </h3>
             <p className="text-xs text-gray-600">
               {selectedChat.isOnline
@@ -114,6 +125,11 @@ const ChatArea = () => {
             groupmessages &&
             groupmessages.map((message) => (
               <ViewMessage key={message.msg_id} message={message} />
+            ))}
+          {chatAreaContext === ViewContext.COMMS &&
+            commsPosts &&
+            commsPosts.map((message) => (
+              <ViewPost key={message.id} message={message} />
             ))}
         </div>
       </div>

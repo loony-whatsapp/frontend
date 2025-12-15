@@ -28,5 +28,7 @@ export const getGroupInfo = (groupId) =>
   authHttpClient.get(`/group/${groupId}/groupInfo`);
 export const getGroupMessagesFromId = (groupId) =>
   authHttpClient.get(`/group/${groupId}/groupMessages`);
+export const getCommsPostsFromId = (com_id) =>
+  authHttpClient.get(`/community/${com_id}/posts`);
 export const newGroupMessage = (body) =>
   authHttpClient.post("/group/newMessage", body);

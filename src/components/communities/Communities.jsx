@@ -5,9 +5,17 @@ import Empty from "../Empty";
 
 export default function Communities() {
   const [communities] = useCommunities(1);
-  const { viewContext } = useContext(AppContext);
+  const { viewContext, setAppContext } = useContext(AppContext);
   if (viewContext !== ViewContext.COMMS) return null;
   if (!communities) return <Empty />;
+
+  const onClickItem = (item, vc) => {
+    setAppContext((prev) => ({
+      ...prev,
+      selectedChat: item,
+      chatAreaContext: vc,
+    }));
+  };
 
   return (
     <div className="flex-1 overflow-y-auto p-4">
@@ -21,6 +29,7 @@ export default function Communities() {
         <div
           key={community.com_id}
           className="flex items-center p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200"
+          onClick={() => onClickItem(community, ViewContext.COMMS)}
         >
           <img
             src={`http://localhost:2000/file/${community.com_id}`}

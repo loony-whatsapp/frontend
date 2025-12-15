@@ -10,6 +10,7 @@ import {
   newMessage,
   newGroupMessage,
   getGroupInfo,
+  getCommsPostsFromId,
 } from "loony-api";
 
 /** User */
@@ -84,7 +85,7 @@ export const useMessagesFromId = (userId: number, otherUserId: number) => {
     if (userId && otherUserId) {
       getMessagesFromId(userId, otherUserId)
         .then((res) => {
-          setMessages(res.data);
+          setMessages(res.data.reverse());
         })
         .catch((e) => {
           console.log(e);
@@ -133,13 +134,30 @@ export const useGroupMessagesFromId = (groupId: number) => {
     if (groupId) {
       getGroupMessagesFromId(groupId)
         .then((res) => {
-          setMessages(res.data);
+          setMessages(res.data.reverse());
         })
         .catch((e) => {
           console.log(e);
         });
     }
   }, [groupId]);
+
+  return [messages, setMessages];
+};
+
+export const useCommsPostsFromId = (comId: number) => {
+  const [messages, setMessages] = useState(null);
+  useEffect(() => {
+    if (comId) {
+      getCommsPostsFromId(comId)
+        .then((res) => {
+          setMessages(res.data.reverse());
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
+  }, [comId]);
 
   return [messages, setMessages];
 };
