@@ -14,6 +14,7 @@ export default function Communities() {
       ...prev,
       selectedChat: item,
       chatAreaContext: vc,
+      screen: "chat",
     }));
   };
 

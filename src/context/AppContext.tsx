@@ -20,8 +20,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     userInfo: null,
   });
 
+  const resetAppContext = () => {
+    setAppContext({
+      viewContext: ViewContext.DM,
+      chatAreaContext: null,
+      selectedChat: null,
+      screen: "chat",
+      userInfo: null,
+    });
+  };
+
   return (
-    <AppContext.Provider value={{ ...state, setAppContext }}>
+    <AppContext.Provider value={{ ...state, setAppContext, resetAppContext }}>
       {children}
     </AppContext.Provider>
   );

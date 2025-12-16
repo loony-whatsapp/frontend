@@ -1,10 +1,10 @@
 import React from "react";
 import { FaPhone, FaVideo, FaArrowDown } from "react-icons/fa";
 
-const CallItem = ({ call }) => {
+const CallItem = ({ call, onClickItem }) => {
   return (
     <div className="flex items-center justify-between p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200">
-      <div className="flex items-center">
+      <div className="flex items-center" onClick={() => onClickItem(call)}>
         <img
           src={
             call

@@ -6,11 +6,19 @@ import { useContacts } from "../../hooks";
 import Empty from "../Empty";
 
 export default function Contacts() {
-  const { viewContext } = useContext(AppContext);
+  const { viewContext, setAppContext } = useContext(AppContext);
   const [contacts] = useContacts(1);
 
   if (viewContext !== ViewContext.CONTACTS) return null;
   if (!contacts) return <Empty />;
+
+  const onClickItem = (item, vc) => {
+    setAppContext((prev) => ({
+      ...prev,
+      userProfile: item,
+      screen: "profile",
+    }));
+  };
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -41,6 +49,9 @@ export default function Contacts() {
           <div
             key={status.user_id}
             className="flex items-center p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200"
+            onClick={() => {
+              onClickItem(status);
+            }}
           >
             <div className="relative">
               <img

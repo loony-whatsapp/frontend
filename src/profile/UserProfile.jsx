@@ -21,7 +21,7 @@ import { getUserInfo, getGroupInfo } from "loony-api";
 import { AppContext } from "../context/AppContext";
 
 const UserProfile = () => {
-  const { screen, userProfile } = useContext(AppContext);
+  const { screen, userProfile, resetAppContext } = useContext(AppContext);
   const [profileData, setProfileData] = useState(null);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -30,8 +30,13 @@ const UserProfile = () => {
   const [statusPrivacy, setStatusPrivacy] = useState("mycontacts");
 
   useEffect(() => {
-    console.log("userProfile changed:", userProfile);
-    if (userProfile && !userProfile.other_user_id && !userProfile.group_id) {
+    if (
+      userProfile &&
+      !userProfile.other_user_id &&
+      !userProfile.group_id &&
+      !userProfile.com_id &&
+      !userProfile.id
+    ) {
       setProfileData((prev) => ({
         ...prev,
         ...userProfile,
@@ -46,6 +51,14 @@ const UserProfile = () => {
     }
     if (userProfile && userProfile.group_id) {
       getGroupInfo(userProfile.group_id).then((res) => {
+        setProfileData(res.data);
+      });
+    }
+    if (userProfile && userProfile.com_id) {
+      setProfileData(userProfile);
+    }
+    if (userProfile && userProfile.id) {
+      getUserInfo(userProfile.id).then((res) => {
         setProfileData(res.data);
       });
     }
@@ -117,7 +130,10 @@ const UserProfile = () => {
           {/* Top Header */}
           <div className="bg-white border-b border-gray-300 p-4">
             <div className="flex items-center">
-              <button className="p-2 hover:bg-gray-100 rounded-full">
+              <button
+                className="p-2 hover:bg-gray-100 rounded-full"
+                onClick={() => resetAppContext()}
+              >
                 <ArrowLeft size={24} className="text-gray-600" />
               </button>
               <h1 className="ml-3 text-lg font-semibold">Profile</h1>
@@ -138,7 +154,8 @@ const UserProfile = () => {
                             ? `http://localhost:2000/file/${
                                 profileData.uid ||
                                 profileData.id ||
-                                profileData.group_id
+                                profileData.group_id ||
+                                profileData.com_id
                               }`
                             : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face"
                         }
@@ -155,7 +172,8 @@ const UserProfile = () => {
                             ? `http://localhost:2000/file/${
                                 profileData.uid ||
                                 profileData.id ||
-                                profileData.group_id
+                                profileData.group_id ||
+                                profileData.com_id
                               }`
                             : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face"
                         }
@@ -171,7 +189,10 @@ const UserProfile = () => {
                   {!isEditing ? (
                     <div className="text-center w-full max-w-md">
                       <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-                        {profileData.display_name || profileData.group_name}
+                        {profileData.display_name ||
+                          profileData.group_name ||
+                          profileData.com_name ||
+                          profileData.name}
                       </h2>
                       <p className="text-gray-600 mb-6">
                         {profileData.about || profileData.description}
