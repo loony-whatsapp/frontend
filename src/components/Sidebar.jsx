@@ -27,7 +27,7 @@ const TABS = [
 ];
 
 const Sidebar = () => {
-  const { selectedChat, viewContext, setAppContext } = useContext(AppContext);
+  const { viewContext, setAppContext } = useContext(AppContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [authUserInfo] = useAuthUserInfo(1);
 
@@ -36,6 +36,7 @@ const Sidebar = () => {
       ...prev,
       viewContext: item,
       chatAreaContext: ViewContext.None,
+      screen: "chat",
     }));
   };
 
@@ -44,8 +45,7 @@ const Sidebar = () => {
       ...prev,
       screen: "profile",
       userProfile: authUserInfo,
-      chatAreaContext: null,
-      selectedChat: null,
+      chatAreaContext: ViewContext.None,
     }));
   };
 

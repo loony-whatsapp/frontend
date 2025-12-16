@@ -17,7 +17,7 @@ import {
   ChevronRight,
   Check,
 } from "lucide-react";
-import { getUserInfo } from "loony-api";
+import { getUserInfo, getGroupInfo } from "loony-api";
 import { AppContext } from "../context/AppContext";
 
 const UserProfile = () => {
@@ -30,7 +30,8 @@ const UserProfile = () => {
   const [statusPrivacy, setStatusPrivacy] = useState("mycontacts");
 
   useEffect(() => {
-    if (userProfile && !userProfile.other_user_id) {
+    console.log("userProfile changed:", userProfile);
+    if (userProfile && !userProfile.other_user_id && !userProfile.group_id) {
       setProfileData((prev) => ({
         ...prev,
         ...userProfile,
@@ -40,6 +41,11 @@ const UserProfile = () => {
     }
     if (userProfile && userProfile.other_user_id) {
       getUserInfo(userProfile.other_user_id).then((res) => {
+        setProfileData(res.data);
+      });
+    }
+    if (userProfile && userProfile.group_id) {
+      getGroupInfo(userProfile.group_id).then((res) => {
         setProfileData(res.data);
       });
     }
@@ -130,7 +136,9 @@ const UserProfile = () => {
                         src={
                           profileData
                             ? `http://localhost:2000/file/${
-                                profileData.uid || profileData.id
+                                profileData.uid ||
+                                profileData.id ||
+                                profileData.group_id
                               }`
                             : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face"
                         }
@@ -145,7 +153,9 @@ const UserProfile = () => {
                         src={
                           profileData
                             ? `http://localhost:2000/file/${
-                                profileData.uid || profileData.id
+                                profileData.uid ||
+                                profileData.id ||
+                                profileData.group_id
                               }`
                             : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face"
                         }
@@ -161,9 +171,11 @@ const UserProfile = () => {
                   {!isEditing ? (
                     <div className="text-center w-full max-w-md">
                       <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-                        {profileData.display_name}
+                        {profileData.display_name || profileData.group_name}
                       </h2>
-                      <p className="text-gray-600 mb-6">{profileData.about}</p>
+                      <p className="text-gray-600 mb-6">
+                        {profileData.about || profileData.description}
+                      </p>
                       <button
                         onClick={() => setIsEditing(true)}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
