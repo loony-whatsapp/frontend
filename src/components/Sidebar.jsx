@@ -1,13 +1,11 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, use } from "react";
 import {
   FaSearch,
   FaEllipsisV,
   FaComment,
   FaUsers,
   FaPhone,
-  FaVideo,
   FaCircle,
-  FaPlus,
   FaCamera,
 } from "react-icons/fa";
 
@@ -17,7 +15,7 @@ import Contacts from "./contacts/Contacts";
 import Messages from "./messages/Messages";
 import Communities from "./communities/Communities";
 
-import { useGroupInfo, useUserInfo } from "../hooks";
+import { useAuthUserInfo } from "../hooks";
 import { AppContext, ViewContext } from "../context/AppContext";
 
 const TABS = [
@@ -31,8 +29,7 @@ const TABS = [
 const Sidebar = () => {
   const { selectedChat, viewContext, setAppContext } = useContext(AppContext);
   const [searchTerm, setSearchTerm] = useState("");
-  const [userInfo] = useUserInfo(1);
-  // const [groupInfo] = useGroupInfo(selectedChat?.group_id || null);
+  const [authUserInfo] = useAuthUserInfo(1);
 
   const changeTab = (item) => {
     setAppContext((prev) => ({
@@ -42,23 +39,33 @@ const Sidebar = () => {
     }));
   };
 
+  const onClickUserProfile = () => {
+    setAppContext((prev) => ({
+      ...prev,
+      screen: "profile",
+      userProfile: authUserInfo,
+      chatAreaContext: null,
+      selectedChat: null,
+    }));
+  };
+
   return (
     <div className="w-full md:w-1/3 border-r border-gray-300 bg-white flex flex-col">
       {/* Header */}
       <div className="bg-gray-100 p-4">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center">
+          <div className="flex items-center" onClick={onClickUserProfile}>
             <img
               src={
-                userInfo
-                  ? `http://localhost:2000/file/${userInfo.uid}`
+                authUserInfo
+                  ? `http://localhost:2000/file/${authUserInfo.id}`
                   : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face"
               }
               alt="Profile"
               className="w-10 h-10 rounded-full object-cover"
             />
             <span className="ml-3 font-semibold">
-              {userInfo && userInfo.display_name}
+              {authUserInfo && authUserInfo.display_name}
             </span>
           </div>
           <div className="flex space-x-4 text-gray-600">

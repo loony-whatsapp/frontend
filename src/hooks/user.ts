@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   getUserInfo,
+  getAuthUserInfo,
   getUserContacts,
   getUserGroups,
   getUserDMAndGM,
@@ -14,6 +15,19 @@ import {
 } from "loony-api";
 
 /** User */
+export const useAuthUserInfo = (userId: number) => {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    if (userId) {
+      getAuthUserInfo(userId).then((res) => {
+        setUser(res.data);
+      });
+    }
+  }, [userId]);
+
+  return [user, setUser];
+};
+
 export const useUserInfo = (userId: number) => {
   const [user, setUser] = useState(null);
   useEffect(() => {

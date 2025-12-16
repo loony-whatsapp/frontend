@@ -9,6 +9,8 @@ const authUserId = 1;
 /** User */
 export const getUserInfo = (userId) =>
   authHttpClient.get(`/user/${userId}/userInfo`);
+export const getAuthUserInfo = (userId) =>
+  authHttpClient.get(`/user/${userId}/authUserInfo`);
 export const getUserContacts = (userId) =>
   authHttpClient.get(`/user/${userId}/contacts`);
 export const getUserGroups = (userId) =>

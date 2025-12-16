@@ -19,11 +19,16 @@ import {
   useNewMessage,
   useCommsPostsFromId,
 } from "../hooks";
-import EmojiPicker from "emoji-picker-react"; // Install with: npm install emoji-picker-react
+import EmojiPicker from "emoji-picker-react";
 
 const ChatArea = () => {
-  const { selectedChat, chatAreaContext, setSelectedChat } =
-    useContext(AppContext);
+  const {
+    selectedChat,
+    chatAreaContext,
+    setSelectedChat,
+    setAppContext,
+    screen,
+  } = useContext(AppContext);
   const [messages] = useMessagesFromId(1, selectedChat?.other_user_id);
   const [groupmessages] = useGroupMessagesFromId(selectedChat?.group_id);
   const [commsPosts] = useCommsPostsFromId(selectedChat?.com_id);
@@ -132,6 +137,20 @@ const ChatArea = () => {
     }
   };
 
+  const onClickUserProfile = (userProfile) => {
+    setAppContext((prev) => ({
+      ...prev,
+      screen: "profile",
+      userProfile,
+      chatAreaContext: null,
+      selectedChat: null,
+    }));
+  };
+
+  if (screen !== "chat") {
+    return null;
+  }
+
   if (chatAreaContext == ViewContext.None || !selectedChat) {
     return (
       <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-gray-100">
@@ -190,7 +209,10 @@ const ChatArea = () => {
 
       {/* Chat Header */}
       <div className="bg-gray-200 px-4 py-3 flex items-center justify-between border-b border-gray-300 relative">
-        <div className="flex items-center">
+        <div
+          className="flex items-center"
+          onClick={() => onClickUserProfile(selectedChat)}
+        >
           <button
             className="md:hidden mr-3 text-gray-600"
             onClick={() => setSelectedChat(null)}

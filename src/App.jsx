@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import ChatArea from "./components/ChatArea";
 import { AppProvider } from "./context/AppContext";
+import UserProfile from "./profile/UserProfile";
 
 function App() {
-  const [selectedChat, setSelectedChat] = useState(null);
-
   return (
     <div className="h-screen bg-gray-100 flex flex-col">
       {/* Mobile Header */}
@@ -25,12 +24,9 @@ function App() {
       {/* Main Content */}
       <AppProvider>
         <div className="flex-1 flex overflow-hidden">
-          <Sidebar
-            selectedChat={selectedChat}
-            setSelectedChat={setSelectedChat}
-          />
-
+          <Sidebar />
           <ChatArea />
+          <UserProfile />
         </div>
       </AppProvider>
     </div>

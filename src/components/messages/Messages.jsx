@@ -14,6 +14,7 @@ function RenderMessages() {
       ...prev,
       selectedChat: item,
       chatAreaContext: vc,
+      screen: "chat",
     }));
   };
 
@@ -31,7 +32,6 @@ function RenderMessages() {
         <GroupMessageItem
           key={index}
           message={message}
-          // isActive={selectedChat?.id === item.id}
           onClick={() => onClickItem(message, ViewContext.GM)}
         />
       ))}

@@ -16,6 +16,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     viewContext: ViewContext.DM,
     chatAreaContext: null,
     selectedChat: null,
+    screen: "chat",
+    userInfo: null,
   });
 
   return (
