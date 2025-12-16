@@ -40,7 +40,7 @@ function RenderMessages() {
 }
 
 export default function Messages() {
-  const { viewContext } = useContext(AppContext);
-  if (viewContext !== ViewContext.DM) return null;
+  const { tabContext } = useContext(AppContext);
+  if (tabContext !== ViewContext.DM) return null;
   return <RenderMessages />;
 }

@@ -6,10 +6,10 @@ import { useContacts } from "../../hooks";
 import Empty from "../Empty";
 
 export default function Contacts() {
-  const { viewContext, setAppContext } = useContext(AppContext);
+  const { tabContext, setAppContext } = useContext(AppContext);
   const [contacts] = useContacts(1);
 
-  if (viewContext !== ViewContext.CONTACTS) return null;
+  if (tabContext !== ViewContext.CONTACTS) return null;
   if (!contacts) return <Empty />;
 
   const onClickItem = (item, vc) => {

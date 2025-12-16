@@ -13,7 +13,7 @@ export const AppContext = createContext<any>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, setAppContext] = useState({
-    viewContext: ViewContext.DM,
+    tabContext: ViewContext.DM,
     chatAreaContext: null,
     selectedChat: null,
     screen: "chat",
@@ -22,7 +22,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const resetAppContext = () => {
     setAppContext({
-      viewContext: ViewContext.DM,
+      tabContext: ViewContext.DM,
       chatAreaContext: null,
       selectedChat: null,
       screen: "chat",

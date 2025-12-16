@@ -30,6 +30,7 @@ const UserProfile = () => {
   const [statusPrivacy, setStatusPrivacy] = useState("mycontacts");
 
   useEffect(() => {
+    // console.log("userProfile changed:", userProfile);
     if (
       userProfile &&
       !userProfile.other_user_id &&
@@ -58,9 +59,7 @@ const UserProfile = () => {
       setProfileData(userProfile);
     }
     if (userProfile && userProfile.id) {
-      getUserInfo(userProfile.id).then((res) => {
-        setProfileData(res.data);
-      });
+      setProfileData(userProfile);
     }
   }, [userProfile]);
 
@@ -152,6 +151,7 @@ const UserProfile = () => {
                         src={
                           profileData
                             ? `http://localhost:2000/file/${
+                                profileData.user_id ||
                                 profileData.uid ||
                                 profileData.id ||
                                 profileData.group_id ||
@@ -170,6 +170,7 @@ const UserProfile = () => {
                         src={
                           profileData
                             ? `http://localhost:2000/file/${
+                                profileData.user_id ||
                                 profileData.uid ||
                                 profileData.id ||
                                 profileData.group_id ||

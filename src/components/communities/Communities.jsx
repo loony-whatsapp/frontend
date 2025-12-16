@@ -5,8 +5,8 @@ import Empty from "../Empty";
 
 export default function Communities() {
   const [communities] = useCommunities(1);
-  const { viewContext, setAppContext } = useContext(AppContext);
-  if (viewContext !== ViewContext.COMMS) return null;
+  const { tabContext, setAppContext } = useContext(AppContext);
+  if (tabContext !== ViewContext.COMMS) return null;
   if (!communities) return <Empty />;
 
   const onClickItem = (item, vc) => {

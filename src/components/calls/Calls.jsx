@@ -4,13 +4,14 @@ import CallItem from "./CallItem";
 import { AppContext, ViewContext } from "../../context/AppContext";
 
 export default function Calls() {
-  const { viewContext, setAppContext } = useContext(AppContext);
-  if (viewContext !== ViewContext.CALLS) return null;
+  const { tabContext, setAppContext } = useContext(AppContext);
+  if (tabContext !== ViewContext.CALLS) return null;
 
   const onClickItem = (item, vc) => {
     setAppContext((prev) => ({
       ...prev,
       userProfile: item,
+      tabContext: vc,
       screen: "profile",
     }));
   };

@@ -8,8 +8,8 @@ export default function Groups() {
   const [groups] = useGroups(1);
   const { setAppContext, selectedChat } = useContext(AppContext);
 
-  const { viewContext } = useContext(AppContext);
-  if (viewContext !== ViewContext.GM) return null;
+  const { tabContext } = useContext(AppContext);
+  if (tabContext !== ViewContext.GM) return null;
   if (!groups) return <Empty />;
 
   const onClickItem = (item) => {

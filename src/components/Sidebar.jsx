@@ -27,14 +27,14 @@ const TABS = [
 ];
 
 const Sidebar = () => {
-  const { viewContext, setAppContext } = useContext(AppContext);
+  const { tabContext, setAppContext } = useContext(AppContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [authUserInfo] = useAuthUserInfo(1);
 
   const changeTab = (item) => {
     setAppContext((prev) => ({
       ...prev,
-      viewContext: item,
+      tabContext: item,
       chatAreaContext: ViewContext.None,
       screen: "chat",
     }));
@@ -95,7 +95,7 @@ const Sidebar = () => {
           <button
             key={key}
             className={`flex-1 py-3 flex items-center justify-center border-b-2 transition-colors ${
-              viewContext === key
+              tabContext === key
                 ? "border-whatsapp-green-500 text-whatsapp-green-500"
                 : "border-transparent text-gray-500 hover:text-whatsapp-green-500"
             }`}
