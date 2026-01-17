@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { AppContext, ViewContext } from "../../context/AppContext";
 import { useCommunities } from "../../hooks";
 import Empty from "../Empty";
+import { API_URL } from "../../Config";
 
 export default function Communities() {
   const [communities] = useCommunities(1);
@@ -28,19 +29,17 @@ export default function Communities() {
       </div>
       {communities.map((community) => (
         <div
-          key={community.com_id}
+          key={community.id}
           className="flex items-center p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200"
           onClick={() => onClickItem(community, ViewContext.COMMS)}
         >
           <img
-            src={`http://localhost:2000/file/${community.com_id}`}
-            alt={community.com_name}
+            src={`${API_URL}/media/${community.id}`}
+            alt={community.name}
             className="w-12 h-12 rounded-full object-cover"
           />
           <div className="ml-3">
-            <h3 className="font-semibold text-gray-800">
-              {community.com_name}
-            </h3>
+            <h3 className="font-semibold text-gray-800">{community.name}</h3>
             <p className="text-sm text-gray-600">{community.description}</p>
             <p className="text-xs text-gray-500">{343} members</p>
           </div>

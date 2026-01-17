@@ -20,6 +20,7 @@ import {
   useCommsPostsFromId,
 } from "../hooks";
 import EmojiPicker from "emoji-picker-react";
+import { API_URL } from "../Config";
 
 const ChatArea = () => {
   const {
@@ -220,7 +221,7 @@ const ChatArea = () => {
             <FaArrowLeft />
           </button>
           <img
-            src={`http://localhost:2000/file/${
+            src={`${API_URL}/media/${
               selectedChat.other_user_id ||
               selectedChat.group_id ||
               selectedChat.com_id

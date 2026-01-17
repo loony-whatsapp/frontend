@@ -1,18 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
-import {
-  getUserInfo,
+import Api from "loony-api";
+import { API_URL } from "../Config";
+
+const api = Api(API_URL);
+const {
   getAuthUserInfo,
+  getUserInfo,
   getUserContacts,
   getUserGroups,
   getUserDMAndGM,
-  getUserCommunities,
   getMessagesFromId,
+  getUserCommunities,
+  getGroupInfo,
   getGroupMessagesFromId,
+  getCommsPostsFromId,
   newMessage,
   newGroupMessage,
-  getGroupInfo,
-  getCommsPostsFromId,
-} from "loony-api";
+} = api;
 
 /** User */
 export const useAuthUserInfo = (userId: number) => {

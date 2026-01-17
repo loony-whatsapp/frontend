@@ -20,7 +20,7 @@ function RenderMessages() {
 
   return (
     <div className="flex-1 overflow-y-auto">
-      {messages.users.map((message, index) => (
+      {messages.directMessages.map((message, index) => (
         <MessageItem
           key={index}
           message={message}
@@ -28,7 +28,7 @@ function RenderMessages() {
           onClick={() => onClickItem(message, ViewContext.DM)}
         />
       ))}
-      {messages.groups.map((message, index) => (
+      {messages.groupMessages.map((message, index) => (
         <GroupMessageItem
           key={index}
           message={message}

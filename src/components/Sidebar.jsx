@@ -17,6 +17,7 @@ import Communities from "./communities/Communities";
 
 import { useAuthUserInfo } from "../hooks";
 import { AppContext, ViewContext } from "../context/AppContext";
+import { API_URL } from "../Config";
 
 const TABS = [
   { key: ViewContext.DM, icon: FaComment, label: "Chats" },
@@ -58,7 +59,7 @@ const Sidebar = () => {
             <img
               src={
                 authUserInfo
-                  ? `http://localhost:2000/file/${authUserInfo.id}`
+                  ? `${API_URL}/media/${authUserInfo.id}`
                   : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face"
               }
               alt="Profile"

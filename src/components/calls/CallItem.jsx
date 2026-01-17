@@ -1,5 +1,6 @@
 import React from "react";
 import { FaPhone, FaVideo, FaArrowDown } from "react-icons/fa";
+import { API_URL } from "../../Config";
 
 const CallItem = ({ call, onClickItem }) => {
   return (
@@ -8,7 +9,7 @@ const CallItem = ({ call, onClickItem }) => {
         <img
           src={
             call
-              ? `http://localhost:2000/file/${call.id}`
+              ? `${API_URL}/media/${call.id}`
               : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face"
           }
           alt="Profile"

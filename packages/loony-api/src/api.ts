@@ -8,29 +8,29 @@ const authUserId = 1;
 
 /** User */
 export const getUserInfo = (userId) =>
-  authHttpClient.get(`/user/${userId}/userInfo`);
+  apiHttpClient.get(`/user/${userId}/userInfo`);
 export const getAuthUserInfo = (userId) =>
-  authHttpClient.get(`/user/${userId}/authUserInfo`);
+  apiHttpClient.get(`/user/${userId}/authUserInfo`);
 export const getUserContacts = (userId) =>
-  authHttpClient.get(`/user/${userId}/contacts`);
+  apiHttpClient.get(`/user/${userId}/contacts`);
 export const getUserGroups = (userId) =>
-  authHttpClient.get(`/user/${userId}/groups`);
+  apiHttpClient.get(`/user/${userId}/groups`);
 export const getUserDMAndGM = (userId) =>
-  authHttpClient.get(`/user/${userId}/dmAndgm`);
+  apiHttpClient.get(`/user/${userId}/dmAndgm`);
 export const getMessagesFromId = (userId, otherUserId) =>
-  authHttpClient.get(`/user/${userId}/${otherUserId}/messagesFrom`);
+  apiHttpClient.get(`/user/${userId}/${otherUserId}/messagesFrom`);
 export const newMessage = (body) =>
-  authHttpClient.post("/user/newMessage", body);
+  apiHttpClient.post("/user/newMessage", body);
 export const getUserCommunities = (userId) =>
-  authHttpClient.get(`/user/${userId}/communities`);
+  apiHttpClient.get(`/user/${userId}/communities`);
 
 /** Group */
 
 export const getGroupInfo = (groupId) =>
-  authHttpClient.get(`/group/${groupId}/groupInfo`);
+  apiHttpClient.get(`/group/${groupId}/groupInfo`);
 export const getGroupMessagesFromId = (groupId) =>
-  authHttpClient.get(`/group/${groupId}/groupMessages`);
+  apiHttpClient.get(`/group/${groupId}/groupMessages`);
 export const getCommsPostsFromId = (com_id) =>
-  authHttpClient.get(`/community/${com_id}/posts`);
+  apiHttpClient.get(`/community/${com_id}/posts`);
 export const newGroupMessage = (body) =>
-  authHttpClient.post("/group/newMessage", body);
+  apiHttpClient.post("/group/newMessage", body);

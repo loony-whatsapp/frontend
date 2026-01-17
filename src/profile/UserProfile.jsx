@@ -17,8 +17,12 @@ import {
   ChevronRight,
   Check,
 } from "lucide-react";
-import { getUserInfo, getGroupInfo } from "loony-api";
+import Api from "loony-api";
 import { AppContext } from "../context/AppContext";
+import { API_URL } from "../Config";
+
+const api = Api(API_URL);
+const { getUserInfo, getGroupInfo } = api;
 
 const UserProfile = () => {
   const { screen, userProfile, resetAppContext } = useContext(AppContext);
@@ -150,7 +154,7 @@ const UserProfile = () => {
                       <img
                         src={
                           profileData
-                            ? `http://localhost:2000/file/${
+                            ? `${API_URL}/media/${
                                 profileData.user_id ||
                                 profileData.uid ||
                                 profileData.id ||
@@ -169,7 +173,7 @@ const UserProfile = () => {
                       <img
                         src={
                           profileData
-                            ? `http://localhost:2000/file/${
+                            ? `${API_URL}/media/${
                                 profileData.user_id ||
                                 profileData.uid ||
                                 profileData.id ||

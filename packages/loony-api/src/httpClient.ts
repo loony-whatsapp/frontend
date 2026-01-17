@@ -1,19 +1,30 @@
-// src/api/httpClient.js
-import axios from "axios"
+import axios from "axios";
+import process from "process";
+
+console.log("API_URL:", process.env.API_URL);
 
 const authHttpClient = axios.create({
-  baseURL: "http://localhost:2000",
+  baseURL: process.env.AUTH_URL,
   timeout: 10000,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
-})
+});
 
 const apiHttpClient = axios.create({
-  baseURL: "http://localhost:2040",
+  baseURL: process.env.API_URL,
   timeout: 10000,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
-})
+});
+
+export function Axios(URL: string) {
+  return axios.create({
+    baseURL: URL,
+    timeout: 10000,
+    headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+  });
+}
 
 // Request interceptor
 // httpClient.interceptors.request.use((config) => {
@@ -24,43 +35,43 @@ const apiHttpClient = axios.create({
 
 // Response interceptor
 
-let isRefreshing = false
-let refreshSubscribers: any = []
+let isRefreshing = false;
+let refreshSubscribers: any = [];
 
 // function subscribeTokenRefresh(cb: any) {
 //   refreshSubscribers.push(cb)
 // }
 
 function onRrefreshed() {
-  refreshSubscribers.forEach((cb: any) => cb())
-  refreshSubscribers = []
+  refreshSubscribers.forEach((cb: any) => cb());
+  refreshSubscribers = [];
 }
 
 authHttpClient.interceptors.response.use(
   (response) => response,
   async (err) => {
-    console.log("AuthClient error", err)
-    const originalRequest = err.config
+    console.log("AuthClient error", err);
+    const originalRequest = err.config;
 
     // If 401 and we haven’t retried yet
     if (err.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true
+      originalRequest._retry = true;
 
       // Prevent multiple parallel refresh calls
       if (!isRefreshing) {
-        isRefreshing = true
+        isRefreshing = true;
 
         try {
-          await authHttpClient.post("/refreshToken", {})
-          isRefreshing = false
-          onRrefreshed()
-          return authHttpClient(originalRequest) // retry original
+          await authHttpClient.post("/refreshToken", {});
+          isRefreshing = false;
+          onRrefreshed();
+          return authHttpClient(originalRequest); // retry original
         } catch (refreshErr) {
-          isRefreshing = false
+          isRefreshing = false;
 
           // ❌ Refresh failed → redirect to login
           // window.location.href = "/login"
-          return Promise.reject(refreshErr)
+          return Promise.reject(refreshErr);
         }
       }
 
@@ -72,8 +83,8 @@ authHttpClient.interceptors.response.use(
       // })
     }
 
-    return Promise.reject(err)
-  },
-)
+    return Promise.reject(err);
+  }
+);
 
-export { authHttpClient, apiHttpClient }
+export { authHttpClient, apiHttpClient };

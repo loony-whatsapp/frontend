@@ -1,4 +1,4 @@
-import React from "react";
+import { API_URL } from "../../Config";
 
 export const ViewMessage = ({ message }) => {
   return (
@@ -64,7 +64,7 @@ export const MessageItem = ({ message, onClick, isActive }) => {
     >
       <div className="relative">
         <img
-          src={`http://localhost:2000/file/${message.other_user_id}`}
+          src={`${API_URL}/media/${message.other_user_id}`}
           alt={message.other_user_name}
           className="w-12 h-12 rounded-full object-cover"
         />
@@ -96,7 +96,7 @@ export const GroupMessageItem = ({ message, onClick }) => {
     >
       <div className="relative">
         <img
-          src={`http://localhost:2000/file/${message.group_id}`}
+          src={`${API_URL}/media/${message.group_id}`}
           alt={message.group_name}
           className="w-12 h-12 rounded-full object-cover"
         />
