@@ -30,9 +30,17 @@ const ChatArea = () => {
     setAppContext,
     screen,
   } = useContext(AppContext);
-  const [messages] = useMessagesFromId(1, selectedChat?.other_user_id);
-  const [groupmessages] = useGroupMessagesFromId(selectedChat?.group_id);
-  const [commsPosts] = useCommsPostsFromId(selectedChat?.com_id);
+  console.log("CONTEXT", { selectedChat, chatAreaContext });
+  const [messages] = useMessagesFromId(
+    1,
+    selectedChat?.context_id,
+    chatAreaContext
+  );
+  const [groupmessages] = useGroupMessagesFromId(
+    selectedChat?.context_id,
+    chatAreaContext
+  );
+  const [commsPosts] = useCommsPostsFromId(selectedChat?.context_id);
 
   const sendNewMessage = useNewMessage();
   const [newMessage, setNewMessage] = useState("");
@@ -221,23 +229,13 @@ const ChatArea = () => {
             <FaArrowLeft />
           </button>
           <img
-            src={`${API_URL}/media/${
-              selectedChat.other_user_id ||
-              selectedChat.group_id ||
-              selectedChat.com_id
-            }`}
-            alt={
-              selectedChat.other_user_name ||
-              selectedChat.group_name ||
-              selectedChat.com_name
-            }
+            src={`${API_URL}/media/${selectedChat.context_id}`}
+            alt={selectedChat.context_name}
             className="w-10 h-10 rounded-full object-cover"
           />
           <div className="ml-3">
             <h3 className="font-semibold text-gray-800">
-              {selectedChat.other_user_name ||
-                selectedChat.group_name ||
-                selectedChat.com_name}
+              {selectedChat.context_name}
             </h3>
             <p className="text-xs text-gray-600">
               {selectedChat.isOnline

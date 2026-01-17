@@ -18,6 +18,28 @@ const {
   newGroupMessage,
 } = api;
 
+const restructureDMandGM = (msgs: any) => {
+  return {
+    directMessages: msgs.directMessages.map((msg: any) => ({
+      ...msg,
+      context_id: msg.other_user_id,
+      context_name: msg.other_user_name,
+    })),
+    groupMessages: msgs.groupMessages.map((msg: any) => ({
+      ...msg,
+      context_id: msg.group_id,
+      context_name: msg.group_name,
+    })),
+  };
+};
+
+const restructureDirectMessages = (msgs: any, otherUserId: number) => {
+  return msgs.map((msg: any) => ({
+    ...msg,
+    context_id: otherUserId,
+  }));
+};
+
 /** User */
 export const useAuthUserInfo = (userId: number) => {
   const [user, setUser] = useState(null);
@@ -67,7 +89,13 @@ export const useGroups = (userId: number) => {
   useEffect(() => {
     getUserGroups(userId)
       .then((res) => {
-        setGroups(res.data);
+        setGroups(
+          res.data.map((d: any) => ({
+            ...d,
+            context_id: d.id,
+            context_name: d.name,
+          }))
+        );
       })
       .catch((e) => {
         console.log(e);
@@ -78,12 +106,13 @@ export const useGroups = (userId: number) => {
 };
 
 export const useDMAndGM = (userId: number) => {
-  const [messages, setMessages] = useState(null);
+  const [messages, setMessages] = useState<any>(null);
   useEffect(() => {
     if (userId) {
       getUserDMAndGM(userId)
         .then((res) => {
-          setMessages(res.data);
+          const data = restructureDMandGM(res.data);
+          setMessages(data);
         })
         .catch((e) => {
           console.log(e);
@@ -97,19 +126,25 @@ export const useDMAndGM = (userId: number) => {
   return [messages, setMessages];
 };
 
-export const useMessagesFromId = (userId: number, otherUserId: number) => {
+export const useMessagesFromId = (
+  userId: number,
+  otherUserId: number,
+  context: number
+) => {
   const [messages, setMessages] = useState(null);
   useEffect(() => {
-    if (userId && otherUserId) {
+    if (userId && otherUserId && context === 1) {
       getMessagesFromId(userId, otherUserId)
         .then((res) => {
-          setMessages(res.data.reverse());
+          setMessages(
+            restructureDirectMessages(res.data.reverse(), otherUserId)
+          );
         })
         .catch((e) => {
           console.log(e);
         });
     }
-  }, [userId, otherUserId]);
+  }, [userId, otherUserId, context]);
 
   return [messages, setMessages];
 };
@@ -120,7 +155,13 @@ export const useCommunities = (userId: number) => {
     if (userId) {
       getUserCommunities(userId)
         .then((res) => {
-          setCommunities(res.data);
+          setCommunities(
+            res.data.map((d: any) => ({
+              ...d,
+              context_id: d.id,
+              context_name: d.name,
+            }))
+          );
         })
         .catch((e) => {
           console.log(e);
@@ -146,10 +187,10 @@ export const useGroupInfo = (groupId: number) => {
   return [group, setGroupInfo];
 };
 
-export const useGroupMessagesFromId = (groupId: number) => {
+export const useGroupMessagesFromId = (groupId: number, context: number) => {
   const [messages, setMessages] = useState(null);
   useEffect(() => {
-    if (groupId) {
+    if (groupId && context === 2) {
       getGroupMessagesFromId(groupId)
         .then((res) => {
           setMessages(res.data.reverse());
@@ -158,7 +199,7 @@ export const useGroupMessagesFromId = (groupId: number) => {
           console.log(e);
         });
     }
-  }, [groupId]);
+  }, [groupId, context]);
 
   return [messages, setMessages];
 };

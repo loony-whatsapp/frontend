@@ -23,7 +23,7 @@ export default function run(url: string) {
     getGroupInfo: (groupId) => axios.get(`/group/${groupId}/groupInfo`),
     getGroupMessagesFromId: (groupId) =>
       axios.get(`/messages/groups/${groupId}/messages`),
-    getCommsPostsFromId: (com_id) => axios.get(`/community/${com_id}/posts`),
+    getCommsPostsFromId: (com_id) => axios.get(`/communities/${com_id}/posts`),
     newGroupMessage: (body: any) => axios.post("/group/newMessage", body),
   };
 }
