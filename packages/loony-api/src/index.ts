@@ -16,13 +16,13 @@ export default function run(url: string) {
     getUserDMAndGM: (userId) =>
       axios.get(`/messages/direct/group/${userId}/messages`),
     getMessagesFromId: (userId, otherUserId) =>
-      axios.get(`/user/${userId}/${otherUserId}/messagesFrom`),
+      axios.get(`/messages/direct/${otherUserId}`),
     newMessage: (body: any) => axios.post("/user/newMessage", body),
     getUserCommunities: (userId) => axios.get(`/communities`),
 
     getGroupInfo: (groupId) => axios.get(`/group/${groupId}/groupInfo`),
     getGroupMessagesFromId: (groupId) =>
-      axios.get(`/group/${groupId}/groupMessages`),
+      axios.get(`/messages/groups/${groupId}/messages`),
     getCommsPostsFromId: (com_id) => axios.get(`/community/${com_id}/posts`),
     newGroupMessage: (body: any) => axios.post("/group/newMessage", body),
   };
