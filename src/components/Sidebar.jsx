@@ -16,37 +16,36 @@ import Messages from "./messages/Messages";
 import Communities from "./communities/Communities";
 
 import { useAuthUserInfo } from "../hooks";
-import { AppContext, ViewContext } from "../context/AppContext";
+import { AppContext, CHAT_AREA_NAME, TAB_NAME } from "../context/AppContext";
 import { API_URL } from "../Config";
 
 const TABS = [
-  { key: ViewContext.DM, icon: FaComment, label: "Chats" },
-  { key: ViewContext.GM, icon: FaUsers, label: "Groups" },
-  { key: ViewContext.COMMS, icon: FaUsers, label: "Communities" },
-  { key: ViewContext.CALLS, icon: FaPhone, label: "Calls" },
-  { key: ViewContext.CONTACTS, icon: FaCircle, label: "Contacts" },
+  { key: TAB_NAME.ALL_MESSAGES, icon: FaComment, label: "Chats" },
+  { key: TAB_NAME.GROUPS, icon: FaUsers, label: "Groups" },
+  { key: TAB_NAME.COMMUNITIES, icon: FaUsers, label: "Communities" },
+  { key: TAB_NAME.CALLS, icon: FaPhone, label: "Calls" },
+  { key: TAB_NAME.CONTACTS, icon: FaCircle, label: "Contacts" },
 ];
 
 const Sidebar = () => {
-  const { tabContext, setAppContext } = useContext(AppContext);
+  const { tabName, setAppContext } = useContext(AppContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [authUserInfo] = useAuthUserInfo(1);
 
-  const changeTab = (item) => {
+  const changeTab = (changedTabName) => {
     setAppContext((prev) => ({
       ...prev,
-      tabContext: item,
-      chatAreaContext: ViewContext.None,
-      screen: "chat",
+      tabName: changedTabName,
+      chatAreaName: CHAT_AREA_NAME.NONE,
+      data: null,
     }));
   };
 
   const onClickUserProfile = () => {
     setAppContext((prev) => ({
       ...prev,
-      screen: "profile",
-      userProfile: authUserInfo,
-      chatAreaContext: ViewContext.None,
+      userInfo: authUserInfo,
+      chatAreaName: CHAT_AREA_NAME.USER_INFO,
     }));
   };
 
@@ -96,7 +95,7 @@ const Sidebar = () => {
           <button
             key={key}
             className={`flex-1 py-3 flex items-center justify-center border-b-2 transition-colors ${
-              tabContext === key
+              tabName === key
                 ? "border-whatsapp-green-500 text-whatsapp-green-500"
                 : "border-transparent text-gray-500 hover:text-whatsapp-green-500"
             }`}
@@ -112,11 +111,11 @@ const Sidebar = () => {
 
       {/* Content */}
       {/* <AppProvider> */}
-      <Messages />
-      <Groups />
-      <Communities />
-      <Calls />
-      <Contacts />
+      {tabName === TAB_NAME.ALL_MESSAGES && <Messages />}
+      {tabName === TAB_NAME.GROUPS && <Groups />}
+      {tabName === TAB_NAME.COMMUNITIES && <Communities />}
+      {tabName === TAB_NAME.CALLS && <Calls />}
+      {tabName === TAB_NAME.CONTACTS && <Contacts />}
       {/* </AppProvider> */}
     </div>
   );

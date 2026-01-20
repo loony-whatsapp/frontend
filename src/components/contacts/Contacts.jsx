@@ -1,23 +1,23 @@
 import { useContext } from "react";
 import { FaPlus } from "react-icons/fa";
 import { contacts, statusUpdates } from "../../data/mockData";
-import { AppContext, ViewContext } from "../../context/AppContext";
+import { AppContext, CHAT_AREA_NAME, TAB_NAME } from "../../context/AppContext";
 import { useContacts } from "../../hooks";
 import Empty from "../Empty";
 import { API_URL } from "../../Config";
 
 export default function Contacts() {
-  const { tabContext, setAppContext } = useContext(AppContext);
+  const { tabName, setAppContext } = useContext(AppContext);
   const [contacts] = useContacts(1);
 
-  if (tabContext !== ViewContext.CONTACTS) return null;
+  if (tabName !== TAB_NAME.CONTACTS) return null;
   if (!contacts) return <Empty />;
 
-  const onClickItem = (item, vc) => {
+  const onClickItem = (data, chatAreaName) => {
     setAppContext((prev) => ({
       ...prev,
-      userProfile: item,
-      screen: "profile",
+      data,
+      chatAreaName: chatAreaName,
     }));
   };
 
@@ -51,7 +51,7 @@ export default function Contacts() {
             key={contact.owner_user_id}
             className="flex items-center p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200"
             onClick={() => {
-              onClickItem(contact);
+              onClickItem(contact, CHAT_AREA_NAME.USER_INFO);
             }}
           >
             <div className="relative">

@@ -6,6 +6,7 @@ import {
   restructureDirectNewMessage,
 } from "./utils";
 import { API_URL } from "../Config";
+import { CHAT_AREA_NAME, TAB_NAME } from "../context/AppContext";
 
 const api = Api(API_URL);
 const {
@@ -116,7 +117,7 @@ export const useMessagesFromId = (
 ) => {
   const [messages, setMessages] = useState(null);
   useEffect(() => {
-    if (userId && otherUserId && context === 1) {
+    if (userId && otherUserId && context === CHAT_AREA_NAME.DIRECT_MESSAGES) {
       getMessagesFromId(userId, otherUserId)
         .then((res) => {
           setMessages(
@@ -173,7 +174,7 @@ export const useGroupInfo = (groupId: number) => {
 export const useGroupMessagesFromId = (groupId: number, context: number) => {
   const [messages, setMessages] = useState(null);
   useEffect(() => {
-    if (groupId && context === 2) {
+    if (groupId && context === CHAT_AREA_NAME.GROUP_MESSAGES) {
       getGroupMessagesFromId(groupId)
         .then((res) => {
           setMessages(res.data.reverse());
@@ -187,10 +188,10 @@ export const useGroupMessagesFromId = (groupId: number, context: number) => {
   return [messages, setMessages];
 };
 
-export const useCommsPostsFromId = (comId: number) => {
+export const useCommsPostsFromId = (comId: number, context: CHAT_AREA_NAME) => {
   const [messages, setMessages] = useState(null);
   useEffect(() => {
-    if (comId) {
+    if (comId && context === CHAT_AREA_NAME.COMMUNITY_POSTS) {
       getCommsPostsFromId(comId)
         .then((res) => {
           setMessages(res.data.reverse());
@@ -209,22 +210,27 @@ export const useCommsPostsFromId = (comId: number) => {
 export const useNewMessage = () => {
   return {
     newMessage: (body: any) => {
-      newMessage(restructureDirectNewMessage(body))
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      console.log("Sending new message with body:", body);
+      return new Promise((resolve, reject) => {
+        newMessage(restructureDirectNewMessage(body))
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      });
     },
     newGroupMessage: (body: any) => {
-      newGroupMessage(restructureDirectNewMessage(body))
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      return new Promise((resolve, reject) => {
+        newGroupMessage(restructureDirectNewMessage(body))
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      });
     },
   };
 };

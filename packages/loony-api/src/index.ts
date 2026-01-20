@@ -1,6 +1,6 @@
 import { Axios } from "./httpClient";
 
-export { Axios, apiHttpClient, authHttpClient } from "./httpClient";
+export { Axios } from "./httpClient";
 
 export default function run(url: string) {
   const axios = Axios(url);
@@ -10,7 +10,7 @@ export default function run(url: string) {
     logout: () => axios.post("/logout"),
     register: (creds: any) => axios.post("/signup", creds),
     getUserInfo: (userId) => axios.get(`/user/${userId}/userInfo`),
-    getAuthUserInfo: (userId) => axios.get(`/user/${userId}/authUserInfo`),
+    getAuthUserInfo: (userId) => axios.get(`/users/info`),
     getUserContacts: (userId) => axios.get(`/users/contacts`),
     getUserGroups: (userId) => axios.get(`/groups`),
     getUserDMAndGM: (userId) =>

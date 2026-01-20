@@ -1,20 +1,20 @@
 import { useContext } from "react";
 import { MessageItem, GroupMessageItem } from "./MessageItem";
-import { AppContext, ViewContext } from "../../context/AppContext";
+import { AppContext, CHAT_AREA_NAME, TAB_NAME } from "../../context/AppContext";
 import { useDMAndGM } from "../../hooks";
 import Empty from "../Empty";
 
 function RenderMessages() {
   const [messages] = useDMAndGM(1);
-  const { setAppContext, selectedChat } = useContext(AppContext);
+  const { setAppContext, tabName } = useContext(AppContext);
   if (!messages) return <Empty />;
+  if (tabName !== TAB_NAME.ALL_MESSAGES) return null;
 
-  const onClickItem = (item, vc) => {
+  const onClickItem = (item, chatAreaName) => {
     setAppContext((prev) => ({
       ...prev,
-      selectedChat: item,
-      chatAreaContext: vc,
-      screen: "chat",
+      data: item,
+      chatAreaName: chatAreaName,
     }));
   };
 
@@ -24,15 +24,14 @@ function RenderMessages() {
         <MessageItem
           key={index}
           message={message}
-          isActive={selectedChat?.msg_id === message.msg_id}
-          onClick={() => onClickItem(message, ViewContext.DM)}
+          onClick={() => onClickItem(message, CHAT_AREA_NAME.DIRECT_MESSAGES)}
         />
       ))}
       {messages.groupMessages.map((message, index) => (
         <GroupMessageItem
           key={index}
           message={message}
-          onClick={() => onClickItem(message, ViewContext.GM)}
+          onClick={() => onClickItem(message, CHAT_AREA_NAME.GROUP_MESSAGES)}
         />
       ))}
     </div>
@@ -40,7 +39,7 @@ function RenderMessages() {
 }
 
 export default function Messages() {
-  const { tabContext } = useContext(AppContext);
-  if (tabContext !== ViewContext.DM) return null;
+  const { tabName } = useContext(AppContext);
+  if (tabName !== TAB_NAME.ALL_MESSAGES) return null;
   return <RenderMessages />;
 }

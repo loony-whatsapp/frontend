@@ -1,18 +1,17 @@
 import { useContext } from "react";
 import { calls } from "../../data/mockData";
 import CallItem from "./CallItem";
-import { AppContext, ViewContext } from "../../context/AppContext";
+import { AppContext, CHAT_AREA_NAME, TAB_NAME } from "../../context/AppContext";
 
 export default function Calls() {
-  const { tabContext, setAppContext } = useContext(AppContext);
-  if (tabContext !== ViewContext.CALLS) return null;
+  const { tabName, setAppContext } = useContext(AppContext);
+  if (tabName !== TAB_NAME.CALLS) return null;
 
-  const onClickItem = (item, vc) => {
+  const onClickItem = (callData, tabName) => {
     setAppContext((prev) => ({
       ...prev,
-      userProfile: item,
-      tabContext: vc,
-      screen: "profile",
+      chatAreaName: CHAT_AREA_NAME.USER_INFO,
+      data: callData,
     }));
   };
 
@@ -23,7 +22,7 @@ export default function Calls() {
           key={call.id}
           call={call}
           onClickItem={() => {
-            onClickItem(call, ViewContext.CALLS);
+            onClickItem(call, CHAT_AREA_NAME.USER_INFO);
           }}
         />
       ))}

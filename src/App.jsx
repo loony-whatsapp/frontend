@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import ChatArea from "./components/ChatArea";
 import { AppProvider } from "./context/AppContext";
-import UserProfile from "./profile/UserProfile";
 
 function App() {
   return (
@@ -26,7 +25,6 @@ function App() {
         <div className="flex-1 flex overflow-hidden">
           <Sidebar />
           <ChatArea />
-          <UserProfile />
         </div>
       </AppProvider>
     </div>

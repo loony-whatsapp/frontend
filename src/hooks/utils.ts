@@ -14,13 +14,16 @@ export const restructureDMandGM = (msgs: any) => {
 };
 
 export const restructureDirectMessages = (msgs: any, otherUserId: number) => {
-  return msgs.map((msg: any) => ({
+  const after = msgs.map((msg: any) => ({
     ...msg,
     context_id: otherUserId,
   }));
+  console.log("After Restructuring messages:", after, otherUserId);
+  return after;
 };
 
 export const restructureDirectNewMessage = (body: any) => {
+  if (body.receiver_id) return body;
   return {
     ...body,
     receiver_id: body.other_user_id,

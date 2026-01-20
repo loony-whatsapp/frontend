@@ -18,14 +18,18 @@ import {
   Check,
 } from "lucide-react";
 import Api from "loony-api";
-import { AppContext } from "../context/AppContext";
+import { AppContext, CHAT_AREA_NAME } from "../context/AppContext";
 import { API_URL } from "../Config";
 
 const api = Api(API_URL);
 const { getUserInfo, getGroupInfo } = api;
 
 const UserProfile = () => {
-  const { screen, userProfile, resetAppContext } = useContext(AppContext);
+  const {
+    chatAreaName,
+    data: userProfile,
+    resetAppContext,
+  } = useContext(AppContext);
   const [profileData, setProfileData] = useState(null);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -121,7 +125,7 @@ const UserProfile = () => {
     { value: "nobody", label: "Nobody" },
   ];
 
-  if (screen !== "profile" || !profileData) {
+  if (chatAreaName !== CHAT_AREA_NAME.USER_INFO || !profileData) {
     return null;
   }
 

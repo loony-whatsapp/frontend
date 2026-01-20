@@ -1,22 +1,21 @@
 import { useState, useContext } from "react";
 import GroupItem from "./GroupItem";
-import { AppContext, ViewContext } from "../../context/AppContext";
+import { AppContext, CHAT_AREA_NAME, TAB_NAME } from "../../context/AppContext";
 import { useGroups } from "../../hooks";
 import Empty from "../Empty";
 
 export default function Groups() {
   const [groups] = useGroups(1);
-  const { setAppContext, selectedChat } = useContext(AppContext);
+  const { setAppContext, tabName } = useContext(AppContext);
 
-  const { tabContext } = useContext(AppContext);
-  if (tabContext !== ViewContext.GM) return null;
   if (!groups) return <Empty />;
+  if (tabName !== TAB_NAME.GROUPS) return null;
 
-  const onClickItem = (item) => {
+  const onClickItem = (data) => {
     setAppContext((prev) => ({
       ...prev,
-      selectedChat: item,
-      chatAreaContext: ViewContext.GM,
+      data,
+      chatAreaName: CHAT_AREA_NAME.GROUP_MESSAGES,
     }));
   };
 
@@ -24,9 +23,8 @@ export default function Groups() {
     <div className="flex-1 overflow-y-auto">
       {groups.map((group) => (
         <GroupItem
-          key={group.group_id}
+          key={group.id}
           group={group}
-          isActive={selectedChat?.id === group.group_id}
           onClick={() => onClickItem(group)}
         />
       ))}

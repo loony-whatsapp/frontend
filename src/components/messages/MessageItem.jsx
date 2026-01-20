@@ -54,12 +54,10 @@ export const ViewPost = ({ message }) => {
   );
 };
 
-export const MessageItem = ({ message, onClick, isActive }) => {
+export const MessageItem = ({ message, onClick }) => {
   return (
     <div
-      className={`flex items-center p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200 ${
-        isActive ? "bg-gray-100" : ""
-      }`}
+      className="flex items-center p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200"
       onClick={onClick}
     >
       <div className="relative">

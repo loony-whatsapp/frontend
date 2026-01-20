@@ -1,21 +1,20 @@
 import { useContext } from "react";
-import { AppContext, ViewContext } from "../../context/AppContext";
+import { AppContext, CHAT_AREA_NAME, TAB_NAME } from "../../context/AppContext";
 import { useCommunities } from "../../hooks";
 import Empty from "../Empty";
 import { API_URL } from "../../Config";
 
 export default function Communities() {
   const [communities] = useCommunities(1);
-  const { tabContext, setAppContext } = useContext(AppContext);
-  if (tabContext !== ViewContext.COMMS) return null;
+  const { tabName, setAppContext } = useContext(AppContext);
+  if (tabName !== TAB_NAME.COMMUNITIES) return null;
   if (!communities) return <Empty />;
 
-  const onClickItem = (item, vc) => {
+  const onClickItem = (data, chatAreaName) => {
     setAppContext((prev) => ({
       ...prev,
-      selectedChat: item,
-      chatAreaContext: vc,
-      screen: "chat",
+      data,
+      chatAreaName: chatAreaName,
     }));
   };
 
@@ -31,7 +30,7 @@ export default function Communities() {
         <div
           key={community.id}
           className="flex items-center p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200"
-          onClick={() => onClickItem(community, ViewContext.COMMS)}
+          onClick={() => onClickItem(community, CHAT_AREA_NAME.COMMUNITY_POSTS)}
         >
           <img
             src={`${API_URL}/media/${community.id}`}

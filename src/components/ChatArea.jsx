@@ -12,7 +12,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { ViewMessage, ViewPost } from "./messages/MessageItem";
-import { AppContext, ViewContext } from "../context/AppContext";
+import { AppContext, CHAT_AREA_NAME, TAB_NAME } from "../context/AppContext";
 import {
   useGroupMessagesFromId,
   useMessagesFromId,
@@ -21,26 +21,30 @@ import {
 } from "../hooks";
 import EmojiPicker from "emoji-picker-react";
 import { API_URL } from "../Config";
+import UserProfile from "../profile/UserProfile";
 
 const ChatArea = () => {
   const {
-    selectedChat,
-    chatAreaContext,
-    setSelectedChat,
+    data: chatAreaData,
+    chatAreaName,
+    tabName,
     setAppContext,
     screen,
   } = useContext(AppContext);
-  console.log("CONTEXT", { selectedChat, chatAreaContext });
-  const [messages] = useMessagesFromId(
+  console.log("CONTEXT", { chatAreaData, chatAreaName, tabName });
+  const [messages, setMessages] = useMessagesFromId(
     1,
-    selectedChat?.context_id,
-    chatAreaContext
+    chatAreaData?.other_user_id,
+    chatAreaName,
   );
-  const [groupmessages] = useGroupMessagesFromId(
-    selectedChat?.context_id,
-    chatAreaContext
+  const [groupmessages, setGroupMessages] = useGroupMessagesFromId(
+    chatAreaData?.id,
+    chatAreaName,
   );
-  const [commsPosts] = useCommsPostsFromId(selectedChat?.context_id);
+  const [commsPosts] = useCommsPostsFromId(
+    chatAreaData?.context_id,
+    chatAreaName,
+  );
 
   const sendNewMessage = useNewMessage();
   const [newMessage, setNewMessage] = useState("");
@@ -78,21 +82,35 @@ const ChatArea = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (newMessage.trim()) {
-      if (selectedChat?.group_id) {
-        sendNewMessage.newGroupMessage({
-          group_id: selectedChat?.group_id,
-          body_text: newMessage,
-        });
-        setNewMessage("");
+      if (chatAreaName === CHAT_AREA_NAME.GM) {
+        sendNewMessage
+          .newGroupMessage({
+            group_id: chatAreaData?.id,
+            body_text: newMessage,
+          })
+          .then((res) => {
+            setGroupMessages([...groupmessages, res.data]);
+            setNewMessage("");
+          })
+          .catch((error) => {
+            console.error("Error sending group message:", error);
+          });
       } else {
-        sendNewMessage.newMessage({
-          other_user_id: selectedChat?.other_user_id,
-          body_text: newMessage,
-        });
-        setNewMessage("");
+        sendNewMessage
+          .newMessage({
+            receiver_id: chatAreaData?.context_id,
+            body_text: newMessage,
+          })
+          .then((res) => {
+            setMessages([...messages, res.data]);
+            setNewMessage("");
+          })
+          .catch((error) => {
+            console.error("Error sending message:", error);
+          });
       }
     }
   };
@@ -124,7 +142,7 @@ const ChatArea = () => {
     console.log("Searching for:", searchQuery);
     // You could filter messages based on searchQuery and highlight matches
     alert(
-      `Searching for: "${searchQuery}"\n\nThis would filter messages containing the search term.`
+      `Searching for: "${searchQuery}"\n\nThis would filter messages containing the search term.`,
     );
   };
 
@@ -132,10 +150,10 @@ const ChatArea = () => {
     const callType = type === "video" ? "Video" : "Audio";
     alert(
       `Initiating ${callType} call with ${
-        selectedChat?.other_user_name ||
-        selectedChat?.group_name ||
-        selectedChat?.com_name
-      }`
+        chatAreaData?.other_user_name ||
+        chatAreaData?.group_name ||
+        chatAreaData?.com_name
+      }`,
     );
   };
 
@@ -151,16 +169,20 @@ const ChatArea = () => {
       ...prev,
       screen: "profile",
       userProfile,
-      chatAreaContext: null,
-      selectedChat: null,
+      chatAreaName: null,
+      chatAreaData: null,
     }));
   };
 
-  if (screen !== "chat") {
-    return null;
-  }
+  // if (
+  //   tabName !== CHAT_AREA_NAME.DIRECT_MESSAGES &&
+  //   tabName !== CHAT_AREA_NAME.GROUP_MESSAGES &&
+  //   tabName !== CHAT_AREA_NAME.COMMUNITY_POSTS
+  // ) {
+  //   return null;
+  // }
 
-  if (chatAreaContext == ViewContext.None || !selectedChat) {
+  if (chatAreaName == CHAT_AREA_NAME.NONE || !chatAreaData) {
     return (
       <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-gray-100">
         <div className="text-center">
@@ -179,6 +201,10 @@ const ChatArea = () => {
         </div>
       </div>
     );
+  }
+
+  if (chatAreaName == CHAT_AREA_NAME.USER_INFO) {
+    return <UserProfile />;
   }
 
   return (
@@ -220,27 +246,24 @@ const ChatArea = () => {
       <div className="bg-gray-200 px-4 py-3 flex items-center justify-between border-b border-gray-300 relative">
         <div
           className="flex items-center"
-          onClick={() => onClickUserProfile(selectedChat)}
+          onClick={() => onClickUserProfile(chatAreaData)}
         >
-          <button
-            className="md:hidden mr-3 text-gray-600"
-            onClick={() => setSelectedChat(null)}
-          >
+          <button className="md:hidden mr-3 text-gray-600" onClick={() => {}}>
             <FaArrowLeft />
           </button>
           <img
-            src={`${API_URL}/media/${selectedChat.context_id}`}
-            alt={selectedChat.context_name}
+            src={`${API_URL}/media/${chatAreaData.context_id}`}
+            alt={chatAreaData.context_name}
             className="w-10 h-10 rounded-full object-cover"
           />
           <div className="ml-3">
             <h3 className="font-semibold text-gray-800">
-              {selectedChat.context_name}
+              {chatAreaData.context_name}
             </h3>
             <p className="text-xs text-gray-600">
-              {selectedChat.isOnline
+              {chatAreaData.isOnline
                 ? "Online"
-                : selectedChat.lastSeen || "Click here for contact info"}
+                : chatAreaData.lastSeen || "Click here for contact info"}
             </p>
           </div>
         </div>
@@ -301,17 +324,17 @@ const ChatArea = () => {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 bg-chat-bg bg-repeat bg-center bg-[#e5ddd5]">
         <div className="max-w-4xl mx-auto">
-          {chatAreaContext === ViewContext.DM &&
+          {chatAreaName === CHAT_AREA_NAME.DIRECT_MESSAGES &&
             messages &&
             messages.map((message) => (
-              <ViewMessage key={message.msg_id} message={message} />
+              <ViewMessage key={message.id} message={message} />
             ))}
-          {chatAreaContext === ViewContext.GM &&
+          {chatAreaName === CHAT_AREA_NAME.GROUP_MESSAGES &&
             groupmessages &&
             groupmessages.map((message) => (
-              <ViewMessage key={message.msg_id} message={message} />
+              <ViewMessage key={message.group_id} message={message} />
             ))}
-          {chatAreaContext === ViewContext.COMMS &&
+          {chatAreaName === CHAT_AREA_NAME.COMMUNITY_POSTS &&
             commsPosts &&
             commsPosts.map((message) => (
               <ViewPost key={message.id} message={message} />
