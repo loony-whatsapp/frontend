@@ -38,7 +38,7 @@ const ChatArea = () => {
     chatAreaName,
   );
   const [groupmessages, setGroupMessages] = useGroupMessagesFromId(
-    chatAreaData?.id,
+    chatAreaData?.group_id,
     chatAreaName,
   );
   const [commsPosts] = useCommsPostsFromId(
