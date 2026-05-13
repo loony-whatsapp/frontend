@@ -5,7 +5,7 @@ import Empty from "../Empty";
 import { API_URL } from "../../Config";
 
 export default function Communities() {
-  const [communities] = useCommunities(1);
+  const [communities] = useCommunities();
   const { tabName, setAppContext } = useContext(AppContext);
   if (tabName !== TAB_NAME.COMMUNITIES) return null;
   if (!communities) return <Empty />;
@@ -20,7 +20,7 @@ export default function Communities() {
 
   return (
     <div className="flex-1 overflow-y-auto p-4">
-      <div className="bg-whatsapp-green-500 text-gray p-4 rounded-lg mb-4">
+      <div className="bg-green-500 text-white p-4 rounded-lg mb-4">
         <h3 className="font-bold text-lg">Communities</h3>
         <p className="text-sm opacity-90">
           Stay connected with your communities
@@ -36,11 +36,14 @@ export default function Communities() {
             src={`${API_URL}/media/${community.id}`}
             alt={community.name}
             className="w-12 h-12 rounded-full object-cover"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(community.name)}&background=25D366&color=fff`;
+            }}
           />
           <div className="ml-3">
             <h3 className="font-semibold text-gray-800">{community.name}</h3>
             <p className="text-sm text-gray-600">{community.description}</p>
-            <p className="text-xs text-gray-500">{343} members</p>
           </div>
         </div>
       ))}

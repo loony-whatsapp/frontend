@@ -10,13 +10,13 @@ const GroupItem = ({ group, onClick }) => {
     >
       <div className="relative">
         <img
-          src={
-            group
-              ? `${API_URL}/media/${group.id}`
-              : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop&crop=face"
-          }
-          alt="Profile"
+          src={`${API_URL}/media/${group.id}`}
+          alt={group.name}
           className="w-10 h-10 rounded-full object-cover"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(group.name || "?")}&background=128C7E&color=fff`;
+          }}
         />
         {/* {group.isOnline && (
           <FaCircle className="absolute bottom-0 right-0 text-green-500 text-xs bg-white rounded-full" />

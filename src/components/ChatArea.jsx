@@ -22,6 +22,7 @@ import {
 import EmojiPicker from "emoji-picker-react";
 import { API_URL } from "../Config";
 import UserProfile from "../profile/UserProfile";
+import { useIncomingDirectMessages, useIncomingGroupMessages } from "../hooks/useSocket";
 
 const ChatArea = () => {
   const {
@@ -29,11 +30,11 @@ const ChatArea = () => {
     chatAreaName,
     tabName,
     setAppContext,
-    screen,
+    currentUser,
   } = useContext(AppContext);
-  console.log("CONTEXT", { chatAreaData, chatAreaName, tabName });
+
   const [messages, setMessages] = useMessagesFromId(
-    1,
+    currentUser?.id,
     chatAreaData?.other_user_id,
     chatAreaName,
   );
@@ -46,6 +47,17 @@ const ChatArea = () => {
     chatAreaName,
   );
 
+  // Real-time: append incoming messages from socket
+  useIncomingDirectMessages(
+    currentUser?.id,
+    chatAreaData?.other_user_id,
+    setMessages,
+  );
+  useIncomingGroupMessages(
+    chatAreaData?.group_id,
+    setGroupMessages,
+  );
+
   const sendNewMessage = useNewMessage();
   const [newMessage, setNewMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -53,10 +65,16 @@ const ChatArea = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSettings, setShowSettings] = useState(false);
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
+  const messagesEndRef = useRef(null);
 
   const emojiPickerRef = useRef(null);
   const settingsRef = useRef(null);
   const attachmentMenuRef = useRef(null);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, groupmessages]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -84,66 +102,39 @@ const ChatArea = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (newMessage.trim()) {
-      if (chatAreaName === CHAT_AREA_NAME.GM) {
-        sendNewMessage
-          .newGroupMessage({
-            group_id: chatAreaData?.id,
-            body_text: newMessage,
-          })
-          .then((res) => {
-            setGroupMessages([...groupmessages, res.data]);
-            setNewMessage("");
-          })
-          .catch((error) => {
-            console.error("Error sending group message:", error);
-          });
-      } else {
-        sendNewMessage
-          .newMessage({
-            receiver_id: chatAreaData?.context_id,
-            body_text: newMessage,
-          })
-          .then((res) => {
-            setMessages([...messages, res.data]);
-            setNewMessage("");
-          })
-          .catch((error) => {
-            console.error("Error sending message:", error);
-          });
-      }
+    if (!newMessage.trim()) return;
+
+    if (chatAreaName === CHAT_AREA_NAME.GROUP_MESSAGES) {
+      sendNewMessage
+        .newGroupMessage({
+          group_id: chatAreaData?.group_id || chatAreaData?.id,
+          body_text: newMessage,
+        })
+        .then((res) => {
+          setGroupMessages((prev) => [...(prev || []), res.data]);
+          setNewMessage("");
+        })
+        .catch((error) => {
+          console.error("Error sending group message:", error);
+        });
+    } else {
+      sendNewMessage
+        .newMessage({
+          receiver_id: chatAreaData?.other_user_id,
+          body_text: newMessage,
+        })
+        .then((res) => {
+          setMessages((prev) => [...(prev || []), res.data]);
+          setNewMessage("");
+        })
+        .catch((error) => {
+          console.error("Error sending message:", error);
+        });
     }
   };
 
   const handleEmojiClick = (emojiData) => {
     setNewMessage((prev) => prev + emojiData.emoji);
-  };
-
-  const handleAttachmentClick = (type) => {
-    // Here you can implement file upload functionality
-    console.log(`Attaching ${type}`);
-
-    // For demo purposes, we'll just add a placeholder message
-    const fileMessages = {
-      image: "📷 [Image attached]",
-      document: "📄 [Document attached]",
-      camera: "📸 [Photo taken]",
-      contact: "👤 [Contact shared]",
-    };
-
-    setNewMessage((prev) => prev + fileMessages[type]);
-    setShowAttachmentMenu(false);
-  };
-
-  const handleSearchMessages = () => {
-    if (!searchQuery.trim()) return;
-
-    // Implement search functionality here
-    console.log("Searching for:", searchQuery);
-    // You could filter messages based on searchQuery and highlight matches
-    alert(
-      `Searching for: "${searchQuery}"\n\nThis would filter messages containing the search term.`,
-    );
   };
 
   const handleCall = (type) => {
@@ -152,35 +143,22 @@ const ChatArea = () => {
       `Initiating ${callType} call with ${
         chatAreaData?.other_user_name ||
         chatAreaData?.group_name ||
-        chatAreaData?.com_name
+        chatAreaData?.context_name
       }`,
     );
   };
 
   const handleSearchInChat = () => {
     setShowSearch(!showSearch);
-    if (showSearch && searchQuery) {
-      handleSearchMessages();
-    }
   };
 
   const onClickUserProfile = (userProfile) => {
     setAppContext((prev) => ({
       ...prev,
-      screen: "profile",
-      userProfile,
-      chatAreaName: null,
-      chatAreaData: null,
+      data: userProfile,
+      chatAreaName: CHAT_AREA_NAME.USER_INFO,
     }));
   };
-
-  // if (
-  //   tabName !== CHAT_AREA_NAME.DIRECT_MESSAGES &&
-  //   tabName !== CHAT_AREA_NAME.GROUP_MESSAGES &&
-  //   tabName !== CHAT_AREA_NAME.COMMUNITY_POSTS
-  // ) {
-  //   return null;
-  // }
 
   if (chatAreaName == CHAT_AREA_NAME.NONE || !chatAreaData) {
     return (
@@ -207,6 +185,17 @@ const ChatArea = () => {
     return <UserProfile />;
   }
 
+  // Derive display name and avatar based on chat type
+  const chatName =
+    chatAreaData?.other_user_name ||
+    chatAreaData?.group_name ||
+    chatAreaData?.context_name ||
+    "Unknown";
+  const chatAvatarId =
+    chatAreaData?.other_user_id ||
+    chatAreaData?.group_id ||
+    chatAreaData?.context_id;
+
   return (
     <div className="flex-1 flex flex-col bg-gray-100 relative">
       {/* Search Overlay */}
@@ -219,25 +208,14 @@ const ChatArea = () => {
             >
               <FaTimes />
             </button>
-            <div className="flex-1 flex items-center">
-              <input
-                type="text"
-                placeholder="Search messages..."
-                className="w-full px-4 py-2 rounded-lg focus:outline-none bg-gray-100"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSearchMessages()}
-                autoFocus
-              />
-              {searchQuery && (
-                <button
-                  onClick={handleSearchMessages}
-                  className="ml-2 bg-whatsapp-green-500 text-white px-4 py-2 rounded-lg hover:bg-whatsapp-teal-500"
-                >
-                  Search
-                </button>
-              )}
-            </div>
+            <input
+              type="text"
+              placeholder="Search messages..."
+              className="flex-1 px-4 py-2 rounded-lg focus:outline-none bg-gray-100"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              autoFocus
+            />
           </div>
         </div>
       )}
@@ -245,54 +223,50 @@ const ChatArea = () => {
       {/* Chat Header */}
       <div className="bg-gray-200 px-4 py-3 flex items-center justify-between border-b border-gray-300 relative">
         <div
-          className="flex items-center"
+          className="flex items-center cursor-pointer"
           onClick={() => onClickUserProfile(chatAreaData)}
         >
           <button className="md:hidden mr-3 text-gray-600" onClick={() => {}}>
             <FaArrowLeft />
           </button>
           <img
-            src={`${API_URL}/media/${chatAreaData.context_id}`}
-            alt={chatAreaData.context_name}
+            src={`${API_URL}/media/${chatAvatarId}`}
+            alt={chatName}
             className="w-10 h-10 rounded-full object-cover"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(chatName)}&background=25D366&color=fff`;
+            }}
           />
           <div className="ml-3">
-            <h3 className="font-semibold text-gray-800">
-              {chatAreaData.context_name}
-            </h3>
-            <p className="text-xs text-gray-600">
-              {chatAreaData.isOnline
-                ? "Online"
-                : chatAreaData.lastSeen || "Click here for contact info"}
-            </p>
+            <h3 className="font-semibold text-gray-800">{chatName}</h3>
+            <p className="text-xs text-gray-600">Click here for contact info</p>
           </div>
         </div>
 
         {/* Header Icons */}
         <div className="flex space-x-4 text-gray-600 relative">
           <FaVideo
-            className="cursor-pointer hover:text-whatsapp-green-500"
+            className="cursor-pointer hover:text-green-500"
             onClick={() => handleCall("video")}
             title="Video call"
           />
           <FaPhone
-            className="cursor-pointer hover:text-whatsapp-green-500"
+            className="cursor-pointer hover:text-green-500"
             onClick={() => handleCall("audio")}
             title="Voice call"
           />
           <FaSearch
-            className="cursor-pointer hover:text-whatsapp-green-500"
+            className="cursor-pointer hover:text-green-500"
             onClick={handleSearchInChat}
             title="Search messages"
           />
           <div className="relative" ref={settingsRef}>
             <FaEllipsisV
-              className="cursor-pointer hover:text-whatsapp-green-500"
+              className="cursor-pointer hover:text-green-500"
               onClick={() => setShowSettings(!showSettings)}
               title="More options"
             />
-
-            {/* Settings Dropdown */}
             {showSettings && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 border border-gray-200">
                 <div className="py-1">
@@ -303,16 +277,7 @@ const ChatArea = () => {
                     Select messages
                   </button>
                   <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Mute notifications
-                  </button>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Disappearing messages
-                  </button>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     Clear chat
-                  </button>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Delete chat
                   </button>
                 </div>
               </div>
@@ -322,23 +287,32 @@ const ChatArea = () => {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 bg-chat-bg bg-repeat bg-center bg-[#e5ddd5]">
+      <div className="flex-1 overflow-y-auto p-4 bg-[#e5ddd5]">
         <div className="max-w-4xl mx-auto">
           {chatAreaName === CHAT_AREA_NAME.DIRECT_MESSAGES &&
             messages &&
-            messages.map((message) => (
-              <ViewMessage key={message.id} message={message} />
+            messages.map((message, i) => (
+              <ViewMessage
+                key={message.id || i}
+                message={message}
+                currentUserId={currentUser?.id}
+              />
             ))}
           {chatAreaName === CHAT_AREA_NAME.GROUP_MESSAGES &&
             groupmessages &&
-            groupmessages.map((message) => (
-              <ViewMessage key={message.group_id} message={message} />
+            groupmessages.map((message, i) => (
+              <ViewMessage
+                key={message.id || i}
+                message={message}
+                currentUserId={currentUser?.id}
+              />
             ))}
           {chatAreaName === CHAT_AREA_NAME.COMMUNITY_POSTS &&
             commsPosts &&
             commsPosts.map((message) => (
-              <ViewPost key={message.id} message={message} />
+              <ViewPost key={message.id} message={message} currentUserId={currentUser?.id} />
             ))}
+          <div ref={messagesEndRef} />
         </div>
       </div>
 
@@ -369,32 +343,18 @@ const ChatArea = () => {
           >
             <div className="py-2">
               <button
-                onClick={() => handleAttachmentClick("image")}
+                onClick={() => setShowAttachmentMenu(false)}
                 className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
               >
                 <span className="mr-3">📷</span>
                 <span>Photos & Videos</span>
               </button>
               <button
-                onClick={() => handleAttachmentClick("document")}
+                onClick={() => setShowAttachmentMenu(false)}
                 className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
               >
                 <span className="mr-3">📄</span>
                 <span>Document</span>
-              </button>
-              <button
-                onClick={() => handleAttachmentClick("camera")}
-                className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                <span className="mr-3">📸</span>
-                <span>Camera</span>
-              </button>
-              <button
-                onClick={() => handleAttachmentClick("contact")}
-                className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                <span className="mr-3">👤</span>
-                <span>Contact</span>
               </button>
             </div>
           </div>
@@ -406,7 +366,7 @@ const ChatArea = () => {
         >
           <button
             type="button"
-            className="text-gray-600 hover:text-whatsapp-green-500 p-2 relative"
+            className="text-gray-600 hover:text-green-500 p-2 relative"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             title="Emoji"
           >
@@ -416,7 +376,7 @@ const ChatArea = () => {
           <div className="relative">
             <button
               type="button"
-              className="text-gray-600 hover:text-whatsapp-green-500 p-2"
+              className="text-gray-600 hover:text-green-500 p-2"
               onClick={() => setShowAttachmentMenu(!showAttachmentMenu)}
               title="Attach file"
             >
@@ -428,7 +388,7 @@ const ChatArea = () => {
             <input
               type="text"
               placeholder="Type a message"
-              className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-whatsapp-green"
+              className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
             />
@@ -437,7 +397,7 @@ const ChatArea = () => {
           {newMessage.trim() ? (
             <button
               type="submit"
-              className="bg-whatsapp-green-500 text-white p-2 rounded-full hover:bg-whatsapp-teal-500 transition-colors"
+              className="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition-colors"
               title="Send message"
             >
               <FaPaperPlane size={16} />
@@ -445,7 +405,7 @@ const ChatArea = () => {
           ) : (
             <button
               type="button"
-              className="text-gray-600 hover:text-whatsapp-green-500 p-2"
+              className="text-gray-600 hover:text-green-500 p-2"
               title="Record voice message"
               onClick={() => alert("Voice recording would start here")}
             >

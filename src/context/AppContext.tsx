@@ -1,4 +1,4 @@
-import { createContext, SetStateAction, useState } from "react";
+import { createContext, useState } from "react";
 
 export enum CHAT_AREA_NAME {
   NONE = 1,
@@ -17,9 +17,25 @@ export enum TAB_NAME {
   CONTACTS = 6,
 }
 
+export interface CurrentUser {
+  id: number;
+  phone_number: string;
+  display_name: string;
+  profile_photo?: string;
+  about?: string;
+}
+
 export const AppContext = createContext<any>(null);
 
-export function AppProvider({ children }: { children: React.ReactNode }) {
+export function AppProvider({
+  children,
+  currentUser,
+  onLogout,
+}: {
+  children: React.ReactNode;
+  currentUser: CurrentUser;
+  onLogout: () => void;
+}) {
   const [state, setAppContext] = useState({
     tabName: TAB_NAME.ALL_MESSAGES,
     chatAreaName: null,
@@ -37,7 +53,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AppContext.Provider value={{ ...state, setAppContext, resetAppContext }}>
+    <AppContext.Provider
+      value={{ ...state, setAppContext, resetAppContext, currentUser, onLogout }}
+    >
       {children}
     </AppContext.Provider>
   );

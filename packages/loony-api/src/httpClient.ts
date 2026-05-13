@@ -8,61 +8,48 @@ export function Axios(URL: string) {
     withCredentials: true,
   });
 
-  // Request interceptor
-  // httpClient.interceptors.request.use((config) => {
-  //   const token = localStorage.getItem("token")
-  //   if (token) config.headers.Authorization = `Bearer ${token}`
-  //   return config
-  // })
-
-  // Response interceptor
+  // Attach JWT token to every request
+  client.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
 
   let isRefreshing = false;
-  let refreshSubscribers: any = [];
+  let refreshSubscribers: Array<() => void> = [];
 
-  // function subscribeTokenRefresh(cb: any) {
-  //   refreshSubscribers.push(cb)
-  // }
-
-  function onRrefreshed() {
-    refreshSubscribers.forEach((cb: any) => cb());
+  function onRefreshed() {
+    refreshSubscribers.forEach((cb) => cb());
     refreshSubscribers = [];
   }
 
   client.interceptors.response.use(
     (response) => response,
     async (err) => {
-      console.log("AuthClient error", err);
       const originalRequest = err.config;
 
-      // If 401 and we haven’t retried yet
       if (err.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
 
-        // Prevent multiple parallel refresh calls
         if (!isRefreshing) {
           isRefreshing = true;
 
           try {
-            await client.post("/refreshToken", {});
+            await client.post("/auth/refresh", {});
             isRefreshing = false;
-            onRrefreshed();
-            return client(originalRequest); // retry original
+            onRefreshed();
+            return client(originalRequest);
           } catch (refreshErr) {
             isRefreshing = false;
-
-            // ❌ Refresh failed → redirect to login
-            // window.location.href = "/login"
+            // Clear stale token and redirect to login
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.reload();
             return Promise.reject(refreshErr);
           }
         }
-
-        // If another refresh is already happening, queue the request
-        // return new Promise((resolve) => {
-        //   subscribeTokenRefresh(() => {
-        //     resolve(authHttpClient(originalRequest))
-        //   })
-        // })
       }
 
       return Promise.reject(err);

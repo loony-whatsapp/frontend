@@ -6,7 +6,7 @@ import {
   restructureDirectNewMessage,
 } from "./utils";
 import { API_URL } from "../Config";
-import { CHAT_AREA_NAME, TAB_NAME } from "../context/AppContext";
+import { CHAT_AREA_NAME } from "../context/AppContext";
 
 const api = Api(API_URL);
 const {
@@ -24,16 +24,16 @@ const {
   newGroupMessage,
 } = api;
 
-/** User */
-export const useAuthUserInfo = (userId: number) => {
+/** Fetch the currently authenticated user's own info */
+export const useAuthUserInfo = () => {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    if (userId) {
-      getAuthUserInfo(userId).then((res) => {
+    getAuthUserInfo()
+      .then((res) => {
         setUser(res.data);
-      });
-    }
-  }, [userId]);
+      })
+      .catch(() => {});
+  }, []);
 
   return [user, setUser];
 };
@@ -42,36 +42,36 @@ export const useUserInfo = (userId: number) => {
   const [user, setUser] = useState(null);
   useEffect(() => {
     if (userId) {
-      getUserInfo(userId).then((res) => {
-        setUser(res.data);
-      });
+      getUserInfo(userId)
+        .then((res) => {
+          setUser(res.data);
+        })
+        .catch(() => {});
     }
   }, [userId]);
 
   return [user, setUser];
 };
 
-export const useContacts = (userId: number) => {
+export const useContacts = () => {
   const [contacts, setContacts] = useState(null);
   useEffect(() => {
-    if (userId) {
-      getUserContacts(userId)
-        .then((res) => {
-          setContacts(res.data);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
-  }, [userId]);
+    getUserContacts()
+      .then((res) => {
+        setContacts(res.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
 
   return [contacts, setContacts];
 };
 
-export const useGroups = (userId: number) => {
+export const useGroups = () => {
   const [groups, setGroups] = useState(null);
   useEffect(() => {
-    getUserGroups(userId)
+    getUserGroups()
       .then((res) => {
         setGroups(
           res.data.map((d: any) => ({
@@ -84,7 +84,7 @@ export const useGroups = (userId: number) => {
       .catch((e) => {
         console.log(e);
       });
-  }, [userId]);
+  }, []);
 
   return [groups, setGroups];
 };
@@ -133,38 +133,36 @@ export const useMessagesFromId = (
   return [messages, setMessages];
 };
 
-export const useCommunities = (userId: number) => {
+export const useCommunities = () => {
   const [communities, setCommunities] = useState(null);
   useEffect(() => {
-    if (userId) {
-      getUserCommunities(userId)
-        .then((res) => {
-          setCommunities(
-            res.data.map((d: any) => ({
-              ...d,
-              context_id: d.id,
-              context_name: d.name,
-            })),
-          );
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
-  }, [userId]);
+    getUserCommunities()
+      .then((res) => {
+        setCommunities(
+          res.data.map((d: any) => ({
+            ...d,
+            context_id: d.id,
+            context_name: d.name,
+          })),
+        );
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
 
   return [communities, setCommunities];
 };
-
-/** Group */
 
 export const useGroupInfo = (groupId: number) => {
   const [group, setGroupInfo] = useState(null);
   useEffect(() => {
     if (groupId) {
-      getGroupInfo(groupId).then((res) => {
-        setGroupInfo(res.data);
-      });
+      getGroupInfo(groupId)
+        .then((res) => {
+          setGroupInfo(res.data);
+        })
+        .catch(() => {});
     }
   }, [groupId]);
 
@@ -205,31 +203,20 @@ export const useCommsPostsFromId = (comId: number, context: CHAT_AREA_NAME) => {
   return [messages, setMessages];
 };
 
-/** Merged */
-
 export const useNewMessage = () => {
   return {
     newMessage: (body: any) => {
-      console.log("Sending new message with body:", body);
       return new Promise((resolve, reject) => {
         newMessage(restructureDirectNewMessage(body))
-          .then((res) => {
-            resolve(res);
-          })
-          .catch((err) => {
-            reject(err);
-          });
+          .then((res) => resolve(res))
+          .catch((err) => reject(err));
       });
     },
     newGroupMessage: (body: any) => {
       return new Promise((resolve, reject) => {
         newGroupMessage(restructureDirectNewMessage(body))
-          .then((res) => {
-            resolve(res);
-          })
-          .catch((err) => {
-            reject(err);
-          });
+          .then((res) => resolve(res))
+          .catch((err) => reject(err));
       });
     },
   };

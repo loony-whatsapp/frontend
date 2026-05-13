@@ -5,8 +5,9 @@ import { useDMAndGM } from "../../hooks";
 import Empty from "../Empty";
 
 function RenderMessages() {
-  const [messages] = useDMAndGM(1);
-  const { setAppContext, tabName } = useContext(AppContext);
+  const { setAppContext, tabName, currentUser } = useContext(AppContext);
+  const [messages] = useDMAndGM(currentUser?.id);
+
   if (!messages) return <Empty />;
   if (tabName !== TAB_NAME.ALL_MESSAGES) return null;
 
@@ -22,14 +23,14 @@ function RenderMessages() {
     <div className="flex-1 overflow-y-auto">
       {messages.directMessages.map((message, index) => (
         <MessageItem
-          key={index}
+          key={message.last_message_id || index}
           message={message}
           onClick={() => onClickItem(message, CHAT_AREA_NAME.DIRECT_MESSAGES)}
         />
       ))}
       {messages.groupMessages.map((message, index) => (
         <GroupMessageItem
-          key={index}
+          key={message.group_id || index}
           message={message}
           onClick={() => onClickItem(message, CHAT_AREA_NAME.GROUP_MESSAGES)}
         />

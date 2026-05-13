@@ -1,11 +1,11 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import GroupItem from "./GroupItem";
 import { AppContext, CHAT_AREA_NAME, TAB_NAME } from "../../context/AppContext";
 import { useGroups } from "../../hooks";
 import Empty from "../Empty";
 
 export default function Groups() {
-  const [groups] = useGroups(1);
+  const [groups] = useGroups();
   const { setAppContext, tabName } = useContext(AppContext);
 
   if (!groups) return <Empty />;
