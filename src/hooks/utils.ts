@@ -18,7 +18,6 @@ export const restructureDirectMessages = (msgs: any, otherUserId: number) => {
     ...msg,
     context_id: otherUserId,
   }));
-  console.log("After Restructuring messages:", after, otherUserId);
   return after;
 };
 

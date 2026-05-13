@@ -8,7 +8,7 @@ export function Axios(URL: string) {
     withCredentials: true,
   });
 
-  // Attach JWT token to every request
+  // Attach JWT token to every outgoing request
   client.interceptors.request.use((config) => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -17,41 +17,15 @@ export function Axios(URL: string) {
     return config;
   });
 
-  let isRefreshing = false;
-  let refreshSubscribers: Array<() => void> = [];
-
-  function onRefreshed() {
-    refreshSubscribers.forEach((cb) => cb());
-    refreshSubscribers = [];
-  }
-
+  // On 401 the token is expired or invalid — clear auth state and reload to login
   client.interceptors.response.use(
     (response) => response,
-    async (err) => {
-      const originalRequest = err.config;
-
-      if (err.response?.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true;
-
-        if (!isRefreshing) {
-          isRefreshing = true;
-
-          try {
-            await client.post("/auth/refresh", {});
-            isRefreshing = false;
-            onRefreshed();
-            return client(originalRequest);
-          } catch (refreshErr) {
-            isRefreshing = false;
-            // Clear stale token and redirect to login
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            window.location.reload();
-            return Promise.reject(refreshErr);
-          }
-        }
+    (err) => {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.reload();
       }
-
       return Promise.reject(err);
     },
   );

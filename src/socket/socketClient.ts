@@ -15,11 +15,16 @@ export function getSocket(): Socket {
 
 export function connectSocket(token: string, userId: number): Socket {
   const s = getSocket();
-  if (!s.connected) {
-    s.connect();
+  if (s.connected) return s;
+
+  // Authenticate only after the TCP handshake completes, not before.
+  // Emitting before "connect" fires means the event is silently dropped.
+  s.once("connect", () => {
     s.emit("authenticate", token);
     s.emit("join-user", userId);
-  }
+  });
+
+  s.connect();
   return s;
 }
 

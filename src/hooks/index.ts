@@ -198,7 +198,7 @@ export const useCommsPostsFromId = (comId: number, context: CHAT_AREA_NAME) => {
           console.log(e);
         });
     }
-  }, [comId]);
+  }, [comId, context]);
 
   return [messages, setMessages];
 };
