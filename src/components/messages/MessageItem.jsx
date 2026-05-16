@@ -9,6 +9,8 @@ function formatTime(isoString) {
 
 export const ViewMessage = ({ message, currentUserId }) => {
   const isMine = message.sender_id === currentUserId;
+  // A message is pending (optimistic) when it has a temp_id but no real DB id yet
+  const isPending = !message.id && !!message.temp_id;
   return (
     <div className={`flex ${isMine ? "justify-end" : "justify-start"} mb-2`}>
       <div
@@ -16,11 +18,15 @@ export const ViewMessage = ({ message, currentUserId }) => {
           isMine
             ? "bg-[#dcf8c6] text-gray-800 rounded-br-none"
             : "bg-white text-gray-800 rounded-bl-none"
-        }`}
+        } ${isPending ? "opacity-70" : ""}`}
       >
         <p className="text-sm">{message.body_text}</p>
-        <div className="text-xs mt-1 text-gray-500 text-right">
-          {formatTime(message.sent_at)}
+        <div className="text-xs mt-1 text-gray-500 text-right flex items-center justify-end gap-1">
+          {isPending ? (
+            <span title="Sending...">&#x23F3;</span>
+          ) : (
+            formatTime(message.sent_at)
+          )}
         </div>
       </div>
     </div>

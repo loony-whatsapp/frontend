@@ -1,10 +1,6 @@
 import { useEffect } from "react";
 import { connectSocket, disconnectSocket, getSocket } from "../socket/socketClient";
 
-/**
- * Connects socket on mount (when user is authenticated) and disconnects on unmount.
- * Call this once at the app root level after login.
- */
 export function useSocketConnection(userId: number | undefined) {
   useEffect(() => {
     if (!userId) return;
@@ -30,7 +26,8 @@ export function useSocketConnection(userId: number | undefined) {
 }
 
 /**
- * Listen for incoming direct messages and append them to the provided setter.
+ * Listen for incoming direct messages and append them to the sender's state.
+ * Deduplicates by temp_id so an optimistic message is never shown twice.
  */
 export function useIncomingDirectMessages(
   currentUserId: number | undefined,
@@ -43,13 +40,19 @@ export function useIncomingDirectMessages(
     const socket = getSocket();
 
     const handler = (message: any) => {
-      // Only append if the message belongs to the currently open chat
       if (
         activeChatUserId &&
         (message.sender_id === activeChatUserId ||
           message.receiver_id === activeChatUserId)
       ) {
-        setMessages((prev) => [...(prev || []), message]);
+        setMessages((prev) => {
+          const list = prev || [];
+          // Skip if an optimistic message with the same temp_id already exists
+          if (message.temp_id && list.some((m) => m.temp_id === message.temp_id)) {
+            return list;
+          }
+          return [...list, message];
+        });
       }
     };
 
@@ -74,7 +77,13 @@ export function useIncomingGroupMessages(
 
     const handler = (message: any) => {
       if (message.group_id === activeGroupId) {
-        setMessages((prev) => [...(prev || []), message]);
+        setMessages((prev) => {
+          const list = prev || [];
+          if (message.temp_id && list.some((m) => m.temp_id === message.temp_id)) {
+            return list;
+          }
+          return [...list, message];
+        });
       }
     };
 
@@ -83,4 +92,30 @@ export function useIncomingGroupMessages(
       socket.off("new-group-message", handler);
     };
   }, [activeGroupId]);
+}
+
+/**
+ * Handle message-error: remove the optimistic message from both lists.
+ */
+export function useMessageError(
+  currentUserId: number | undefined,
+  setMessages: (updater: (prev: any[]) => any[]) => void,
+  setGroupMessages: (updater: (prev: any[]) => any[]) => void,
+) {
+  useEffect(() => {
+    if (!currentUserId) return;
+
+    const socket = getSocket();
+
+    const handler = ({ temp_id }: { temp_id: string }) => {
+      const remove = (prev: any[]) => (prev || []).filter((m) => m.temp_id !== temp_id);
+      setMessages(remove);
+      setGroupMessages(remove);
+    };
+
+    socket.on("message-error", handler);
+    return () => {
+      socket.off("message-error", handler);
+    };
+  }, [currentUserId]);
 }

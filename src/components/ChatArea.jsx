@@ -16,13 +16,13 @@ import { AppContext, CHAT_AREA_NAME, TAB_NAME } from "../context/AppContext";
 import {
   useGroupMessagesFromId,
   useMessagesFromId,
-  useNewMessage,
   useCommsPostsFromId,
 } from "../hooks";
 import EmojiPicker from "emoji-picker-react";
 import { API_URL } from "../Config";
 import UserProfile from "../profile/UserProfile";
-import { useIncomingDirectMessages, useIncomingGroupMessages } from "../hooks/useSocket";
+import { useIncomingDirectMessages, useIncomingGroupMessages, useMessageError } from "../hooks/useSocket";
+import { emitDirectMessage, emitGroupMessage } from "../socket/socketClient";
 
 const ChatArea = () => {
   const {
@@ -57,8 +57,7 @@ const ChatArea = () => {
     chatAreaData?.group_id,
     setGroupMessages,
   );
-
-  const sendNewMessage = useNewMessage();
+  useMessageError(currentUser?.id, setMessages, setGroupMessages);
   const [newMessage, setNewMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -100,37 +99,32 @@ const ChatArea = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSendMessage = async (e) => {
+  const handleSendMessage = (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    const text = newMessage.trim();
+    if (!text) return;
+
+    const temp_id = crypto.randomUUID();
+    const sent_at = new Date().toISOString();
 
     if (chatAreaName === CHAT_AREA_NAME.GROUP_MESSAGES) {
-      sendNewMessage
-        .newGroupMessage({
-          group_id: chatAreaData?.group_id || chatAreaData?.id,
-          body_text: newMessage,
-        })
-        .then((res) => {
-          setGroupMessages((prev) => [...(prev || []), res.data]);
-          setNewMessage("");
-        })
-        .catch((error) => {
-          console.error("Error sending group message:", error);
-        });
+      const group_id = chatAreaData?.group_id || chatAreaData?.id;
+      // Show optimistically before the server round-trip
+      setGroupMessages((prev) => [
+        ...(prev || []),
+        { temp_id, group_id, sender_id: currentUser?.id, body_text: text, message_type: "text", sent_at },
+      ]);
+      emitGroupMessage({ group_id, body_text: text, temp_id });
     } else {
-      sendNewMessage
-        .newMessage({
-          receiver_id: chatAreaData?.other_user_id,
-          body_text: newMessage,
-        })
-        .then((res) => {
-          setMessages((prev) => [...(prev || []), res.data]);
-          setNewMessage("");
-        })
-        .catch((error) => {
-          console.error("Error sending message:", error);
-        });
+      const receiver_id = chatAreaData?.other_user_id;
+      setMessages((prev) => [
+        ...(prev || []),
+        { temp_id, sender_id: currentUser?.id, receiver_id, body_text: text, message_type: "text", sent_at },
+      ]);
+      emitDirectMessage({ receiver_id, body_text: text, temp_id });
     }
+
+    setNewMessage("");
   };
 
   const handleEmojiClick = (emojiData) => {
@@ -293,7 +287,7 @@ const ChatArea = () => {
             messages &&
             messages.map((message, i) => (
               <ViewMessage
-                key={message.id || i}
+                key={message.temp_id || message.id || i}
                 message={message}
                 currentUserId={currentUser?.id}
               />
@@ -302,7 +296,7 @@ const ChatArea = () => {
             groupmessages &&
             groupmessages.map((message, i) => (
               <ViewMessage
-                key={message.id || i}
+                key={message.temp_id || message.id || i}
                 message={message}
                 currentUserId={currentUser?.id}
               />
