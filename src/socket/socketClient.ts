@@ -51,6 +51,11 @@ export function emitDirectMessage(payload: {
   getSocket().emit("direct-message", payload);
 }
 
+/** Tell the server the current user opened a DM with other_user_id. */
+export function emitOpenChat(other_user_id: number): void {
+  getSocket().emit("open-chat", { other_user_id });
+}
+
 export function emitGroupMessage(payload: {
   group_id: number;
   body_text?: string;
@@ -58,4 +63,12 @@ export function emitGroupMessage(payload: {
   temp_id: string;
 }): void {
   getSocket().emit("group-message", payload);
+}
+
+export function emitTypingStart(chat_id: number, is_group = false): void {
+  getSocket().emit("typing-start", { chat_id, is_group });
+}
+
+export function emitTypingStop(chat_id: number, is_group = false): void {
+  getSocket().emit("typing-stop", { chat_id, is_group });
 }

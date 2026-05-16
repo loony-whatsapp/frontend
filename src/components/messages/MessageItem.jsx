@@ -1,16 +1,77 @@
 import { API_URL } from "../../Config";
 
-// Format ISO timestamp to readable time
 function formatTime(isoString) {
   if (!isoString) return "";
   const d = new Date(isoString);
   return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
+// Single grey tick — message sent to server
+const TickSent = () => (
+  <svg viewBox="0 0 16 11" width="16" height="11" fill="none">
+    <path d="M1 5.5L5.5 10L15 1" stroke="#8696a0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+// Double grey ticks — message delivered to device
+const TickDelivered = () => (
+  <svg viewBox="0 0 18 11" width="18" height="11" fill="none">
+    <path d="M1 5.5L5.5 10L15 1" stroke="#8696a0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M5 5.5L9.5 10L19 1" stroke="#8696a0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+// Double blue ticks — message read
+const TickRead = () => (
+  <svg viewBox="0 0 18 11" width="18" height="11" fill="none">
+    <path d="M1 5.5L5.5 10L15 1" stroke="#53bdeb" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M5 5.5L9.5 10L19 1" stroke="#53bdeb" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+function StatusTick({ status }) {
+  if (status === "read") return <TickRead />;
+  if (status === "delivered") return <TickDelivered />;
+  return <TickSent />;
+}
+
+function MediaContent({ message }) {
+  const isImage = message.message_type === "image" ||
+    (message.media_url && /\.(jpe?g|png|gif|webp)$/i.test(message.media_url));
+
+  if (!message.media_url) return null;
+
+  const src = message.media_url.startsWith("blob:")
+    ? message.media_url                           // optimistic preview
+    : `${API_URL}${message.media_url}`;           // fetched from server
+
+  if (isImage) {
+    return (
+      <img
+        src={src}
+        alt="attachment"
+        className="rounded-md max-w-full mb-1 cursor-pointer"
+        style={{ maxHeight: 260 }}
+        onClick={() => window.open(src, "_blank")}
+      />
+    );
+  }
+  return (
+    <a
+      href={src}
+      target="_blank"
+      rel="noreferrer"
+      className="flex items-center gap-2 text-blue-600 underline text-sm mb-1"
+    >
+      <span>📄</span>
+      <span>{message.media_url.split("/").pop()}</span>
+    </a>
+  );
+}
+
 export const ViewMessage = ({ message, currentUserId }) => {
   const isMine = message.sender_id === currentUserId;
-  // A message is pending (optimistic) when it has a temp_id but no real DB id yet
-  const isPending = !message.id && !!message.temp_id;
+  const isPending = !message.id && !!message.temp_id && !message.status;
   return (
     <div className={`flex ${isMine ? "justify-end" : "justify-start"} mb-2`}>
       <div
@@ -20,12 +81,16 @@ export const ViewMessage = ({ message, currentUserId }) => {
             : "bg-white text-gray-800 rounded-bl-none"
         } ${isPending ? "opacity-70" : ""}`}
       >
-        <p className="text-sm">{message.body_text}</p>
+        <MediaContent message={message} />
+        {message.body_text && <p className="text-sm">{message.body_text}</p>}
         <div className="text-xs mt-1 text-gray-500 text-right flex items-center justify-end gap-1">
           {isPending ? (
             <span title="Sending...">&#x23F3;</span>
           ) : (
-            formatTime(message.sent_at)
+            <>
+              <span>{formatTime(message.sent_at)}</span>
+              {isMine && <StatusTick status={message.status} />}
+            </>
           )}
         </div>
       </div>
