@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { connectSocket, disconnectSocket, getSocket } from "../socket/socketClient";
+import { API_URL } from "../Config";
 
 export function useSocketConnection(userId: number | undefined) {
   useEffect(() => {
@@ -193,6 +194,49 @@ export function useTypingIndicator(
   }, [watchUserId]);
 
   return isTyping;
+}
+
+/**
+ * Track the online/last-seen status of another user.
+ * Fetches once when the userId changes, then keeps it live via socket events.
+ */
+export function usePresence(
+  otherUserId: number | undefined,
+): { online: boolean; lastSeen: string | null } {
+  const [presence, setPresence] = useState<{ online: boolean; lastSeen: string | null }>({
+    online: false,
+    lastSeen: null,
+  });
+
+  useEffect(() => {
+    if (!otherUserId) return;
+
+    const token = localStorage.getItem("token");
+    fetch(`${API_URL}/users/${otherUserId}/presence`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then((r) => r.json())
+      .then((d) => setPresence({ online: d.online, lastSeen: d.last_seen }))
+      .catch(() => {});
+
+    const socket = getSocket();
+
+    const onOnline = ({ user_id }: { user_id: number }) => {
+      if (user_id === otherUserId) setPresence({ online: true, lastSeen: null });
+    };
+    const onOffline = ({ user_id, last_seen }: { user_id: number; last_seen: string }) => {
+      if (user_id === otherUserId) setPresence({ online: false, lastSeen: last_seen });
+    };
+
+    socket.on("user-online",  onOnline);
+    socket.on("user-offline", onOffline);
+    return () => {
+      socket.off("user-online",  onOnline);
+      socket.off("user-offline", onOffline);
+    };
+  }, [otherUserId]);
+
+  return presence;
 }
 
 /**

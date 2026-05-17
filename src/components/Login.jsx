@@ -22,7 +22,7 @@ export default function Login({ onLogin }) {
         const res = await api.login({ phone_number: phone });
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
-        onLogin(res.data.user);
+        onLogin(res.data.user, res.data.refresh_token);
       } else {
         const res = await api.register({
           phone_number: phone,
@@ -31,7 +31,7 @@ export default function Login({ onLogin }) {
         });
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
-        onLogin(res.data.user);
+        onLogin(res.data.user, res.data.refresh_token);
       }
     } catch (err) {
       const msg = err?.response?.data?.error || "Something went wrong";

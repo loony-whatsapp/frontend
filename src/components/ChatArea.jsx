@@ -12,8 +12,9 @@ import UserProfile from "../profile/UserProfile";
 import {
   useIncomingDirectMessages, useIncomingGroupMessages,
   useMessageError, useMessageSent, useMessageStatusUpdates,
-  useTypingIndicator,
+  useTypingIndicator, usePresence,
 } from "../hooks/useSocket";
+import { authFetch } from "../lib/auth";
 import {
   emitDirectMessage, emitGroupMessage, emitOpenChat,
   emitTypingStart, emitTypingStop,
@@ -21,6 +22,15 @@ import {
 
 const TYPING_DEBOUNCE_MS = 1500;
 const PAGE_SIZE = 50;
+
+function formatLastSeen(iso) {
+  if (!iso) return null;
+  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (diff < 60)    return "last seen just now";
+  if (diff < 3600)  return `last seen ${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `last seen ${Math.floor(diff / 3600)}h ago`;
+  return `last seen ${new Date(iso).toLocaleDateString()}`;
+}
 
 const ChatArea = () => {
   const { data: chatAreaData, chatAreaName, setAppContext, currentUser } = useContext(AppContext);
@@ -41,6 +51,7 @@ const ChatArea = () => {
   useMessageError(currentUser?.id, setMessages, setGroupMessages);
 
   const otherIsTyping = useTypingIndicator(chatAreaData?.other_user_id);
+  const { online: otherOnline, lastSeen: otherLastSeen } = usePresence(chatAreaData?.other_user_id);
 
   // Mark conversation read when this chat is opened
   useEffect(() => {
@@ -115,7 +126,6 @@ const ChatArea = () => {
     const prevScrollHeight = container?.scrollHeight ?? 0;
 
     try {
-      const token = localStorage.getItem("token");
       let url;
       if (isDirect) {
         url = `${API_URL}/messages/direct/${chatAreaData.other_user_id}?limit=${PAGE_SIZE}&before_time=${encodeURIComponent(before_time)}`;
@@ -123,7 +133,7 @@ const ChatArea = () => {
         url = `${API_URL}/messages/groups/${chatAreaData.group_id}/messages?limit=${PAGE_SIZE}&before_time=${encodeURIComponent(before_time)}`;
       }
 
-      const res  = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+      const res  = await authFetch(url);
       const data = await res.json();
       const older = Array.isArray(data) ? data.reverse() : [];
 
@@ -242,13 +252,11 @@ const ChatArea = () => {
     // Upload then send via socket
     try {
       setIsUploading(true);
-      const token    = localStorage.getItem("token");
       const formData = new FormData();
       formData.append("file", file);
 
-      const res  = await fetch(`${API_URL}/uploads/file`, {
+      const res = await authFetch(`${API_URL}/uploads/file`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
       if (!res.ok) throw new Error("Upload failed");
@@ -346,6 +354,10 @@ const ChatArea = () => {
             <h3 className="font-semibold text-gray-800">{chatName}</h3>
             {isDirect && otherIsTyping ? (
               <p className="text-xs text-green-600 font-medium">typing…</p>
+            ) : isDirect && otherOnline ? (
+              <p className="text-xs text-green-500 font-medium">online</p>
+            ) : isDirect && otherLastSeen ? (
+              <p className="text-xs text-gray-500">{formatLastSeen(otherLastSeen)}</p>
             ) : (
               <p className="text-xs text-gray-600">Click here for contact info</p>
             )}
